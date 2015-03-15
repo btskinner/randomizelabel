@@ -147,7 +147,10 @@ Is a long file that contains, the randomization column and the treatment conditi
 id      | assign  
 :-----: | :------:
 q4NSkKLNNags | C  
-NRIL0Ewhq8A5	| TUXCFYfIM6JGn	| TMMNjGO4CtvlL	| T5Pe8c9rHidi8	| C
+NRIL0Ewhq8A5	| T
+UXCFYfIM6JGn	| T
+MMNjGO4CtvlL	| T
+5Pe8c9rHidi8	| C
 
 For merging purposes, it's probably a good idea to randomize using a uniquely identifiable variable.
 
@@ -166,3 +169,7 @@ addresslabels_T2.csv
 addresslabels_C.csv
 ```
 The labels themselves **will not** indicate experimental group status (for obvious reasons) so this printing scheme will mitigate mix ups. The number of pages for each group will depend on the types of labels choosen.
+
+## Acknowledgements
+* The good people who put together and contributed to [PyFPDF](https://code.google.com/p/pyfpdf/)
+* [List of random names](http://listofrandomnames.com/) and [Mark Heckmann at ryouready](https://ryouready.wordpress.com/2008/12/18/generate-random-string-name/) for helping me generate my fake class data
