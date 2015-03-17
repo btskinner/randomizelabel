@@ -69,14 +69,14 @@ def whichCSV():
 
         # error handling: only digits allowed
         if not csvfilenum.isdigit():
-            print('\nComputer says no...<cough>...digits only')
+            print('\nERROR: Only digits are accepted; please choose again.')
             continue
         else:
             csvfilenum = int(csvfilenum) - 1
 
         # error handling: only proper integers allowed
         if csvfilenum > len(csvfiles) - 1 or csvfilenum < 0:
-            print('\nComputer says no...<cough>...choose a proper number')
+            print('\nERROR: Number out of range; please choose again.')
             continue
         else:
             break
@@ -89,7 +89,7 @@ def whichCSV():
 
         # error handling
         if not csvfile:
-            print('\nComputer says no...<cough>...no csv file given')
+            print('\nERROR: No csv file given; please choose a file.')
             continue
         else:
             break
@@ -112,14 +112,14 @@ def whichColumns(csvf):
 
         # error handling: only digits allowed
         if not unitcol.isdigit():
-            print('\nComputer says no...<cough>...digits only')
+            print('\nERROR: Only digits are accepted; please choose again.')
             continue
         else:
             unitcol = int(unitcol) - 1
 
         # error handling: only proper integers allowed
         if unitcol > len(headings) - 1 or unitcol < 0:
-            print('\nComputer says no...<cough>...choose a proper number')
+            print('\nERROR: Number out of range; please choose again.')
             continue
         else:
             break
@@ -135,7 +135,7 @@ def whichColumns(csvf):
 
         # error handling
         if wish not in options:
-            print('\nComputer says no...<cough>...choose a number')
+            print('\nERROR: Number not in options; please choose again')
             continue
         else:
             break
@@ -151,14 +151,14 @@ def whichColumns(csvf):
     
             # error handling: only digits allowed
             if not groupcol.isdigit():
-                print('\nComputer says no...<cough>...digits only')
+                print('\nERROR: Only digits are accepted; please choose again.')
                 continue
             else:
                 groupcol = int(groupcol) - 1
 
             # error handling: only proper integers allowed
             if groupcol > len(headings) - 1 or groupcol < 0:
-                print('\nComputer says no...<cough>...choose a proper number')
+                print('\nERROR: Number out of range; please choose again.')
                 continue
             else:
                 break
@@ -180,7 +180,7 @@ def whichColumns(csvf):
 
             # error handling
             if wish not in options:
-                print('\nComputer says no...<cough>...choose a number')
+                print('\nERROR: Number not in options; please choose again')
                 continue
             else:
                 break       
@@ -197,14 +197,14 @@ def whichColumns(csvf):
 
                 # error handling: only digits allowed
                 if not stratcol.isdigit():
-                    print('\nComputer says no...<cough>...digits only')
+                    print('\nERROR: Only digits are accepted; choose again.')
                     continue
                 else:
                     stratcol = int(stratcol) - 1
 
                 # error handling: only proper integers allowed
                 if stratcol > len(headings) - 1 or stratcol < 0:
-                    print('\nComputer says no...<cough>...choose a proper number')
+                    print('\nERROR: Number out of range; choose a proper number.')
                     continue
                 else:
                     break
@@ -228,7 +228,7 @@ def numExperGroups():
 
         # error handling (needs to be an integer)
         if not wish.isdigit() or wish < 0:
-            print('\nComputer says no...<cough>...choose an integer')
+            print('\nERROR: Non-digit entered or number out of range; choose a proper number.')
             continue
         else:
             wish = int(wish)
@@ -258,14 +258,14 @@ def whichLabels():
 
         # error handling: only digits allowed
         if not labs.isdigit():
-            print('\nComputer says no...<cough>...digits only')
+            print('\nERROR: Only digits are accepted; choose again.')
             continue
         else:
             labs = int(labs) - 1
 
         # error handling
         if labs > len(labopts) - 1 or labs < 0:
-            print('\nComputer says no...<cough>...choose a proper number')
+            print('\nERROR: Number out of range; choose a proper number.')
             continue
         else:
             break
@@ -291,33 +291,33 @@ def whatLabels(df):
         try:
             labitems = [int(i) - 1 for i in labitems]
         except ValueError:
-            print('\nComputer says no...<cough>...use integers separated by commas')
+            print('\nERROR: Use integers separated by commas; choose again.')
             continue
 
         # error handling: make sure columns exist     
         try:
             [df.columns.values[i] for i in labitems]
         except (TypeError, ValueError, IndexError):
-            print('\nComputer says no...<cough>...choose a proper number')
+            print('\nERROR: Number out of range; choose a proper number.')
             continue
 
         # error handling: no negative columns (means person chose 0)
         if any(x < 0 for x in labitems):
-            print('\nComputer says no...<cough>...choose a proper number')
+            print('\nERROR: Number out of range; choose a proper number.')
             continue
         else:
             pass
 
         # error handling: too many columns selected 
         if len(labitems) > len(colopts) - 1:
-            print('\nComputer says no...<cough>...too many columns chosen')
+            print('\nERROR: Too many columns chosen; choose again.')
             continue
         else:
             pass
 
         # error handling: too few columns selected 
         if not labitems:
-            print('\nComputer says no...<cough>...too few columns chosen')
+            print('\nERROR: Too few columns chosen; choose again.')
             continue
         else:
             break
