@@ -31,7 +31,7 @@ import pandas as pd                       # for working with csv
 from random import randint, shuffle       # for randomizing
 import math
 from fpdf import FPDF                     # for printing labels
-import os, os.path                        # for checking for local file
+import os                                 # for checking for local file
 import urllib                             # for downloading file
 
 # don't need warning about this
@@ -119,6 +119,13 @@ def whichColumns(csvf):
         # error handling: only proper integers allowed
         if unitcol > len(headings) - 1 or unitcol < 0:
             print('\nERROR: Number out of range; choose again.')
+            continue
+        else:
+            pass
+
+        # randomization unit not unique: exit program
+        if len(df.iloc[:,unitcol]) > len(df.iloc[:,unitcol].unique()):
+            print('\nRandomization unit not unique; choose another unit.')
             continue
         else:
             break
@@ -220,7 +227,7 @@ def numExperGroups():
     # ask for number of treatment conditions
     while True:
         prompt = """\n\nHow many treatment conditions, excluding control?
-        \n\nplease enter an integer (choosing 0 means only control group)
+        \n\nPlease enter an integer (choosing 0 means only control group).
         \n\n"""
         wish = raw_input(prompt)
 
@@ -278,8 +285,8 @@ def whatLabels(df):
 
     # ask for what is wanted on labels
     while True:
-        prompt = """\n\nWhat do you want on the printed labels
-        \n(select desired columns by number, separated by commas)?\n\n"""
+        prompt = """\n\nWhat do you want on the printed labels?
+        \nPlease select desired columns by number, separated by commas.\n\n"""
         print '\n'
         for name in colopts:
             print '(', colopts.index(name) + 1, ')', name
@@ -427,15 +434,13 @@ def main():
     labtype = whichLabels()
     # get label options
     labitems = whatLabels(df)
-    print labitems
     # make labels
     makeLabels(df,labitems,labtype)
 
 # //////////////////////////////////////////////////////////////////////////////
-# MAKE IT SO
+# RUN THE SCRIPT
 # //////////////////////////////////////////////////////////////////////////////
 
-# run the main function
 if __name__== "__main__":
     main()
     print('Success! See local directory for label sheets and assignment table.')
