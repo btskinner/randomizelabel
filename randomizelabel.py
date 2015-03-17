@@ -33,6 +33,7 @@ import math
 from fpdf import FPDF                     # for printing labels
 import os                                 # for checking for local file
 import urllib                             # for downloading file
+import numpy as np                        # for checking column data types
 
 # don't need warning about this
 pd.options.mode.chained_assignment = None  # default='warn'
@@ -132,7 +133,7 @@ def whichColumns(csvf):
 
     # figure out which columns are which: blocking level
     while True:
-        prompt = """\n\nAre you randomizing with groups (choose a number)?
+        prompt = """\n\nAre you randomizing within groups (choose a number)?
         \n(1) Yes
         \n(2) No
         \n\n"""
@@ -194,7 +195,9 @@ def whichColumns(csvf):
         # stratified groupings
         if wish == '1':
             while True:
-                prompt = '\n\nWhich column contains the stratification category?\n\n'
+                prompt = """\n\nWhich column contains the stratification category?
+                \nNOTE: Stratification category must be integer.
+                \n\n"""
                 print '\n'
                 for name in headings:
                     print '(', headings.index(name) + 1, ')', name
@@ -209,8 +212,43 @@ def whichColumns(csvf):
 
                 # error handling: only proper integers allowed
                 if stratcol > len(headings) - 1 or stratcol < 0:
-                    print('\nERROR: Number out of range; choose a proper number.')
+                    print('\nERROR: Number out of range; choose again.')
                     continue
+                else:
+                    pass
+
+                # error handling: cannot be the same as groupcol
+                if stratcol == groupcol:
+                    print('\nERROR: Stratification category cannot be the same as group; choose again.')
+                    continue
+                else:
+                    pass
+
+                # error handling: column data type must be int64
+                if df.iloc[:,stratcol].dtype != np.int64:
+                    while True:
+                        totop = False
+                        print('\nERROR: Stratification column not integer; what would you like to do?')
+                        prompt = """\n\n(1) Choose another column.
+                        \n(2) Move forward without stratifying.
+                        \n\n"""
+                        wish2 = raw_input(prompt)
+                        options = ['1','2']
+                        
+                        # error handling
+                        if wish2 not in options:
+                            print('\nERROR: Number not in options; choose again')
+                            continue
+
+                        elif wish2 == '1':
+                            totop = True; break
+                        else:
+                            break
+                    if totop:
+                        continue
+                    else:
+                        stratcol = None
+                        break
                 else:
                     break
             
