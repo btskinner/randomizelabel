@@ -31,7 +31,7 @@ import pandas as pd                       # for working with csv
 from random import randint, shuffle       # for randomizing
 import math
 from fpdf import FPDF                     # for printing labels
-import os.path                            # for checking for local file
+import os, os.path                        # for checking for local file
 import urllib                             # for downloading file
 
 # don't need warning about this
@@ -54,11 +54,48 @@ import pdflabels
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def whichCSV():
-    prompt = """\nWhich CSV file contains the names of those to be randomized?
-    \n(please give the full path name)\n\n"""
-    csvfile = raw_input(prompt)
-    return csvfile
+    while True:
+        prompt = ('\nWhich CSV file contains the names of those to be '
+                'randomized?\n\n')
+        print '\n'
+        csvfiles = []
+        for f in os.listdir('./'):
+            if f.endswith('.csv'):
+                csvfiles.append(f)
+        csvfiles.append('File not in this directory')
+        for f in csvfiles:
+            print '(', csvfiles.index(f) + 1, ')', os.path.basename(f)
+        csvfilenum = raw_input(prompt)
 
+        # error handling: only digits allowed
+        if not csvfilenum.isdigit():
+            print('\nComputer says no...<cough>...digits only')
+            continue
+        else:
+            csvfilenum = int(csvfilenum) - 1
+
+        # error handling: only proper integers allowed
+        if csvfilenum > len(csvfiles) - 1 or csvfilenum < 0:
+            print('\nComputer says no...<cough>...choose a proper number')
+            continue
+        else:
+            break
+    while True:
+        if csvfilenum == len(csvfiles) - 1:
+            prompt = '\nPlease give full path to CSV file:\n\n'
+            csvfile = raw_input(prompt)
+        else:
+            csvfile = os.path.abspath(csvfiles[csvfilenum])
+
+        # error handling
+        if not csvfile:
+            print('\nComputer says no...<cough>...no csv file given')
+            continue
+        else:
+            break
+
+    return csvfile
+    
 def whichColumns(csvf):   
 
     # open csv file; read csv file
@@ -71,8 +108,16 @@ def whichColumns(csvf):
         print '\n'
         for name in headings:
             print '(', headings.index(name) + 1, ')', name
-        unitcol = int(raw_input(prompt)) - 1
-        # error handling
+        unitcol = raw_input(prompt)
+
+        # error handling: only digits allowed
+        if not unitcol.isdigit():
+            print('\nComputer says no...<cough>...digits only')
+            continue
+        else:
+            unitcol = int(unitcol) - 1
+
+        # error handling: only proper integers allowed
         if unitcol > len(headings) - 1 or unitcol < 0:
             print('\nComputer says no...<cough>...choose a proper number')
             continue
@@ -97,11 +142,27 @@ def whichColumns(csvf):
 
     # randomize within groups
     if wish == '1':
-        prompt = "\n\nWhich column contains the groups?\n\n"
-        print '\n'
-        for name in headings:
-            print '(', headings.index(name) + 1, ')', name
-        groupcol = int(raw_input(prompt)) - 1
+        while True:
+            prompt = "\n\nWhich column contains the groups?\n\n"
+            print '\n'
+            for name in headings:
+                print '(', headings.index(name) + 1, ')', name
+            groupcol = raw_input(prompt)
+    
+            # error handling: only digits allowed
+            if not groupcol.isdigit():
+                print('\nComputer says no...<cough>...digits only')
+                continue
+            else:
+                groupcol = int(groupcol) - 1
+
+            # error handling: only proper integers allowed
+            if groupcol > len(headings) - 1 or groupcol < 0:
+                print('\nComputer says no...<cough>...choose a proper number')
+                continue
+            else:
+                break
+        
     elif wish == '2':
         groupcol = None
 
@@ -126,11 +187,28 @@ def whichColumns(csvf):
 
         # stratified groupings
         if wish == '1':
-            prompt = "\n\nWhich column contains the stratification category?\n\n"
-            print '\n'
-            for name in headings:
-                print '(', headings.index(name) + 1, ')', name
-            stratcol = int(raw_input(prompt)) - 1
+            while True:
+                prompt = ('\n\nWhich column contains the stratification '
+                          'category?\n\n')
+                print '\n'
+                for name in headings:
+                    print '(', headings.index(name) + 1, ')', name
+                stratcol = raw_input(prompt)
+
+                # error handling: only digits allowed
+                if not stratcol.isdigit():
+                    print('\nComputer says no...<cough>...digits only')
+                    continue
+                else:
+                    stratcol = int(stratcol) - 1
+
+                # error handling: only proper integers allowed
+                if stratcol > len(headings) - 1 or stratcol < 0:
+                    print('\nComputer says no...<cough>...choose a proper number')
+                    continue
+                else:
+                    break
+            
         elif wish == '2':
             stratcol = None
     else:
@@ -146,13 +224,14 @@ def numExperGroups():
         prompt = """\n\nHow many treatment conditions, excluding control?
         \n\nPlease enter an integer (choosing 0 means only control group)
         \n\n"""
-        wish = int(raw_input(prompt))
+        wish = raw_input(prompt)
 
         # error handling (needs to be an integer)
-        if not isinstance(wish, int) or wish < 0:
+        if not wish.isdigit() or wish < 0:
             print('\nComputer says no...<cough>...choose an integer')
             continue
         else:
+            wish = int(wish)
             break
         
     # init number of treatment and control based on input
@@ -175,10 +254,17 @@ def whichLabels():
         print '\n'
         for name in labopts:
             print '(', labopts.index(name) + 1, ')', name
-        labs = int(raw_input(prompt)) - 1
+        labs = raw_input(prompt)
+
+        # error handling: only digits allowed
+        if not labs.isdigit():
+            print('\nComputer says no...<cough>...digits only')
+            continue
+        else:
+            labs = int(labs) - 1
 
         # error handling
-        if labs > len(labopts) - 1 or labopts < 0:
+        if labs > len(labopts) - 1 or labs < 0:
             print('\nComputer says no...<cough>...choose a proper number')
             continue
         else:
@@ -201,19 +287,37 @@ def whatLabels(df):
             print '(', colopts.index(name) + 1, ')', name
         labitems = list(raw_input(prompt).split(','))      
 
-        # error handling
+        # error handling: correct format
         try:
             labitems = [int(i) - 1 for i in labitems]
         except ValueError:
-            print('\nComputer says no...<cough>...use commas')
-            continue      
+            print('\nComputer says no...<cough>...use integers separated by commas')
+            continue
+
+        # error handling: make sure columns exist     
         try:
             [df.columns.values[i] for i in labitems]
         except (TypeError, ValueError, IndexError):
             print('\nComputer says no...<cough>...choose a proper number')
             continue
+
+        # error handling: no negative columns (means person chose 0)
+        if any(x < 0 for x in labitems):
+            print('\nComputer says no...<cough>...choose a proper number')
+            continue
+        else:
+            pass
+
+        # error handling: too many columns selected 
         if len(labitems) > len(colopts) - 1:
             print('\nComputer says no...<cough>...too many columns chosen')
+            continue
+        else:
+            pass
+
+        # error handling: too few columns selected 
+        if not labitems:
+            print('\nComputer says no...<cough>...too few columns chosen')
             continue
         else:
             break
@@ -325,6 +429,7 @@ def main():
     labtype = whichLabels()
     # get label options
     labitems = whatLabels(df)
+    print labitems
     # make labels
     makeLabels(df,labitems,labtype)
 

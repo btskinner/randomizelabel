@@ -32,18 +32,24 @@ python randomizelabel.py
 
 ### Locate `*.csv` file
 
-You will be prompted for the location of the `*.csv` file:
+You will be prompted for the location of the `*.csv` file. The script will first search the local directory for all `*.csv` files and list them:
 
 ```
-Which CSV file contains the names of those to be randomized?
+( 1 ) fakeclasslist.csv
+( 2 ) File not in this directory
 
-(please give the full path name)
+Which CSV file contains the names of those to be randomized?
+```
+If you place the names file in the same directory, you can just choose it from here. If you don't, you should select the number for `File not in this directory`. You will then be prompted with:
+
+```
+Please give full path to CSV file:
 ```
 
 You should give the full path (no `~`); for example:
 
 ```
-/Users/<username>/randomizelabel/classlist.csv
+/Users/<username>/randomizelabel/fakeclasslist.csv
 ```
 
 ### Choose primary unit of randomization
