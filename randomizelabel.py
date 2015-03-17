@@ -55,8 +55,7 @@ import pdflabels
 
 def whichCSV():
     while True:
-        prompt = ('\nWhich CSV file contains the names of those to be '
-                'randomized?\n\n')
+        prompt = '\nWhich CSV file contains the names of those to be randomized?\n\n'
         print '\n'
         csvfiles = []
         for f in os.listdir('./'):
@@ -69,27 +68,27 @@ def whichCSV():
 
         # error handling: only digits allowed
         if not csvfilenum.isdigit():
-            print('\nERROR: Only digits are accepted; please choose again.')
+            print('\nERROR: Only digits are accepted; choose again.')
             continue
         else:
             csvfilenum = int(csvfilenum) - 1
 
         # error handling: only proper integers allowed
         if csvfilenum > len(csvfiles) - 1 or csvfilenum < 0:
-            print('\nERROR: Number out of range; please choose again.')
+            print('\nERROR: Number out of range; choose again.')
             continue
         else:
             break
     while True:
         if csvfilenum == len(csvfiles) - 1:
-            prompt = '\nPlease give full path to CSV file:\n\n'
+            prompt = '\n give full path to CSV file:\n\n'
             csvfile = raw_input(prompt)
         else:
             csvfile = os.path.abspath(csvfiles[csvfilenum])
 
         # error handling
         if not csvfile:
-            print('\nERROR: No csv file given; please choose a file.')
+            print('\nERROR: No csv file given; choose a file.')
             continue
         else:
             break
@@ -112,14 +111,14 @@ def whichColumns(csvf):
 
         # error handling: only digits allowed
         if not unitcol.isdigit():
-            print('\nERROR: Only digits are accepted; please choose again.')
+            print('\nERROR: Only digits are accepted; choose again.')
             continue
         else:
             unitcol = int(unitcol) - 1
 
         # error handling: only proper integers allowed
         if unitcol > len(headings) - 1 or unitcol < 0:
-            print('\nERROR: Number out of range; please choose again.')
+            print('\nERROR: Number out of range; choose again.')
             continue
         else:
             break
@@ -135,7 +134,7 @@ def whichColumns(csvf):
 
         # error handling
         if wish not in options:
-            print('\nERROR: Number not in options; please choose again')
+            print('\nERROR: Number not in options; choose again')
             continue
         else:
             break
@@ -151,14 +150,14 @@ def whichColumns(csvf):
     
             # error handling: only digits allowed
             if not groupcol.isdigit():
-                print('\nERROR: Only digits are accepted; please choose again.')
+                print('\nERROR: Only digits are accepted; choose again.')
                 continue
             else:
                 groupcol = int(groupcol) - 1
 
             # error handling: only proper integers allowed
             if groupcol > len(headings) - 1 or groupcol < 0:
-                print('\nERROR: Number out of range; please choose again.')
+                print('\nERROR: Number out of range; choose again.')
                 continue
             else:
                 break
@@ -180,7 +179,7 @@ def whichColumns(csvf):
 
             # error handling
             if wish not in options:
-                print('\nERROR: Number not in options; please choose again')
+                print('\nERROR: Number not in options; choose again')
                 continue
             else:
                 break       
@@ -188,8 +187,7 @@ def whichColumns(csvf):
         # stratified groupings
         if wish == '1':
             while True:
-                prompt = ('\n\nWhich column contains the stratification '
-                          'category?\n\n')
+                prompt = '\n\nWhich column contains the stratification category?\n\n'
                 print '\n'
                 for name in headings:
                     print '(', headings.index(name) + 1, ')', name
@@ -222,7 +220,7 @@ def numExperGroups():
     # ask for number of treatment conditions
     while True:
         prompt = """\n\nHow many treatment conditions, excluding control?
-        \n\nPlease enter an integer (choosing 0 means only control group)
+        \n\nplease enter an integer (choosing 0 means only control group)
         \n\n"""
         wish = raw_input(prompt)
 
