@@ -46,6 +46,9 @@ if not os.path.exists('./pdflabels.py'):
 
 import pdflabels
 
+# modify padding to make larger
+# pdflabels.__init__.padding = pdflabels.convert_metric(5, 'mm')
+
 # //////////////////////////////////////////////////////////////////////////////
 # PYTHON FUNCTIONS
 # //////////////////////////////////////////////////////////////////////////////
@@ -521,8 +524,8 @@ def makeLabels(df,labitems,labtype):
     for eg in expergroup:
         # subset data
         sub = df[df.assign == eg]
-        # move through rows adding labels with items as choosen; init page
-        pl = pdflabels.PDFLabel(labtype); pl.add_page()
+        # move through rows adding labels with items as choosen; changing padding; init page
+        pl = pdflabels.PDFLabel(labtype); pl.padding = 7; pl.add_page()
         for index, row in sub.iterrows():
             labval = []
             for i in range(len(labitems)):
