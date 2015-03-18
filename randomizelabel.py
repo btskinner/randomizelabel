@@ -69,14 +69,14 @@ def whichCSV():
 
         # error handling: only digits allowed
         if not csvfilenum.isdigit():
-            print('\nERROR: Only digits are accepted; choose again.')
+            print '\nERROR: Only digits are accepted; choose again.'
             continue
         else:
             csvfilenum = int(csvfilenum) - 1
 
         # error handling: only proper integers allowed
         if csvfilenum > len(csvfiles) - 1 or csvfilenum < 0:
-            print('\nERROR: Number out of range; choose again.')
+            print '\nERROR: Number out of range; choose again.'
             continue
         else:
             break
@@ -89,7 +89,7 @@ def whichCSV():
 
         # error handling
         if not csvfile:
-            print('\nERROR: No csv file given; choose a file.')
+            print '\nERROR: No csv file given; choose a file.'
             continue
         else:
             break
@@ -112,21 +112,21 @@ def whichColumns(csvf):
 
         # error handling: only digits allowed
         if not unitcol.isdigit():
-            print('\nERROR: Only digits are accepted; choose again.')
+            print '\nERROR: Only digits are accepted; choose again.'
             continue
         else:
             unitcol = int(unitcol) - 1
 
         # error handling: only proper integers allowed
         if unitcol > len(headings) - 1 or unitcol < 0:
-            print('\nERROR: Number out of range; choose again.')
+            print '\nERROR: Number out of range; choose again.'
             continue
         else:
             pass
 
         # randomization unit not unique: exit program
         if len(df.iloc[:,unitcol]) > len(df.iloc[:,unitcol].unique()):
-            print('\nRandomization unit not unique; choose another unit.')
+            print '\nRandomization unit not unique; choose another unit.'
             continue
         else:
             break
@@ -142,7 +142,7 @@ def whichColumns(csvf):
 
         # error handling
         if wish not in options:
-            print('\nERROR: Number not in options; choose again')
+            print '\nERROR: Number not in options; choose again'
             continue
         else:
             break
@@ -158,14 +158,21 @@ def whichColumns(csvf):
     
             # error handling: only digits allowed
             if not groupcol.isdigit():
-                print('\nERROR: Only digits are accepted; choose again.')
+                print '\nERROR: Only digits are accepted; choose again.'
                 continue
             else:
                 groupcol = int(groupcol) - 1
 
             # error handling: only proper integers allowed
             if groupcol > len(headings) - 1 or groupcol < 0:
-                print('\nERROR: Number out of range; choose again.')
+                print '\nERROR: Number out of range; choose again.'
+                continue
+            else:
+                pass
+
+            # error handling: cannot be the same as unitcol
+            if groupcol == unitcol:
+                print '\nERROR: Group category cannot be the same as randomization unit; choose again.'
                 continue
             else:
                 break
@@ -187,7 +194,7 @@ def whichColumns(csvf):
 
             # error handling
             if wish not in options:
-                print('\nERROR: Number not in options; choose again')
+                print '\nERROR: Number not in options; choose again'
                 continue
             else:
                 break       
@@ -205,21 +212,28 @@ def whichColumns(csvf):
 
                 # error handling: only digits allowed
                 if not stratcol.isdigit():
-                    print('\nERROR: Only digits are accepted; choose again.')
+                    print '\nERROR: Only digits are accepted; choose again.'
                     continue
                 else:
                     stratcol = int(stratcol) - 1
 
                 # error handling: only proper integers allowed
                 if stratcol > len(headings) - 1 or stratcol < 0:
-                    print('\nERROR: Number out of range; choose again.')
+                    print '\nERROR: Number out of range; choose again.'
                     continue
                 else:
                     pass
 
                 # error handling: cannot be the same as groupcol
                 if stratcol == groupcol:
-                    print('\nERROR: Stratification category cannot be the same as group; choose again.')
+                    print '\nERROR: Stratification category cannot be the same as group; choose again.'
+                    continue
+                else:
+                    pass
+
+                # error handling: cannot be the same as groupcol
+                if stratcol == unitcol:
+                    print '\nERROR: Stratification category cannot be the same as randomization unit; choose again.'
                     continue
                 else:
                     pass
@@ -237,7 +251,7 @@ def whichColumns(csvf):
                         
                         # error handling
                         if wish2 not in options:
-                            print('\nERROR: Number not in options; choose again')
+                            print '\nERROR: Number not in options; choose again'
                             continue
 
                         elif wish2 == '1':
@@ -258,20 +272,20 @@ def whichColumns(csvf):
         stratcol = None
 
     # return unit, group, and stratification columns
-    return df, unitcol, groupcol, stratcol
+    return df, headings, unitcol, groupcol, stratcol
 
 def numExperGroups():
 
     # ask for number of treatment conditions
     while True:
         prompt = """\n\nHow many treatment conditions, excluding control?
-        \n\nPlease enter an integer (choosing 0 means only control group).
+        \nPlease enter an integer (choosing 0 means only control group).
         \n\n"""
         wish = raw_input(prompt)
 
         # error handling (needs to be an integer)
         if not wish.isdigit() or wish < 0:
-            print('\nERROR: Non-digit entered or number out of range; choose a proper number.')
+            print '\nERROR: Non-digit entered or number out of range; choose a proper number.'
             continue
         else:
             wish = int(wish)
@@ -301,14 +315,14 @@ def whichLabels():
 
         # error handling: only digits allowed
         if not labs.isdigit():
-            print('\nERROR: Only digits are accepted; choose again.')
+            print '\nERROR: Only digits are accepted; choose again.'
             continue
         else:
             labs = int(labs) - 1
 
         # error handling
         if labs > len(labopts) - 1 or labs < 0:
-            print('\nERROR: Number out of range; choose a proper number.')
+            print '\nERROR: Number out of range; choose a proper number.' 
             continue
         else:
             break
@@ -334,33 +348,33 @@ def whatLabels(df):
         try:
             labitems = [int(i) - 1 for i in labitems]
         except ValueError:
-            print('\nERROR: Use integers separated by commas; choose again.')
+            print '\nERROR: Use integers separated by commas; choose again.'
             continue
 
         # error handling: make sure columns exist     
         try:
             [df.columns.values[i] for i in labitems]
         except (TypeError, ValueError, IndexError):
-            print('\nERROR: Number out of range; choose a proper number.')
+            print '\nERROR: Number out of range; choose a proper number.'
             continue
 
         # error handling: no negative columns (means person chose 0)
         if any(x < 0 for x in labitems):
-            print('\nERROR: Number out of range; choose a proper number.')
+            print '\nERROR: Number out of range; choose a proper number.'
             continue
         else:
             pass
 
         # error handling: too many columns selected 
         if len(labitems) > len(colopts) - 1:
-            print('\nERROR: Too many columns chosen; choose again.')
+            print '\nERROR: Too many columns chosen; choose again.'
             continue
         else:
             pass
 
         # error handling: too few columns selected 
         if not labitems:
-            print('\nERROR: Too few columns chosen; choose again.')
+            print '\nERROR: Too few columns chosen; choose again.'
             continue
         else:
             break
@@ -369,7 +383,71 @@ def whatLabels(df):
     return labitems
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# RANDOMIZATIONS FUNCTION
+# DATA CHECK FUNCTION
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+def dataCheck(df,colnames,unitcol,groupcol,stratcol):
+
+    # add each column to list; subset to those that are not None
+    allcols = [unitcol,groupcol,stratcol]; cols = []
+    cols = [a for a in allcols if a is not None]
+
+    # get summary stats for each non-None column; nested dictionary
+    out = {}
+    for c in cols:
+        out[colnames[c]] = {}
+        i = list(df.iloc[:,c].unique()); n = len(i)
+        out[colnames[c]]['uniqueitems'] = sorted(i)
+        out[colnames[c]]['number'] = n
+
+    # print to screen
+    for key, value in out.iteritems():
+        # don't want to print all unit ids...too many/unnecessary
+        if key == df.columns.values[unitcol]:
+            print ('\n' + '=' * 80 + '\n')
+            print 'For the randomization unit: %s' % (key)
+            print ('\n' + '.' * 80 + '\n')
+            print 'Number of unique values = %s' % (out[key]['number'])
+            print ('\n' + '=' * 80 + '\n')
+        elif key == df.columns.values[groupcol]:
+            print ('\n' + '=' * 80 + '\n')
+            print 'For the grouping category: %s' % (key)
+            print ('\n' + '.' * 80 + '\n')
+            print 'Number of unique values = %s\n' % (out[key]['number'])
+            print 'Unique items:\n\n%s' % (out[key]['uniqueitems'])
+            print ('\n' + '=' * 80 + '\n')
+        else:
+            print ('\n' + '=' * 80 + '\n')
+            print 'For the stratification category: %s' % (key)
+            print ('\n' + '.' * 80 + '\n')
+            print 'Number of unique values = %s\n' % (out[key]['number'])
+            print 'Unique items:\n\n%s' % (out[key]['uniqueitems'])
+            print ('\n' + '=' * 80 + '\n')
+
+    # confirm that user wishes to continue
+    while True:
+        prompt = """\n\nDoes all look as it should?
+            \n(1) Yes, proceed with program.
+            \n(2) No, input data need to be adjusted; please exit.
+            \n\n"""
+        wish = raw_input(prompt)
+        options = ['1','2']   
+
+        # error handling
+        if wish not in options:
+            print '\nERROR: Number not in options; choose again.'
+            continue
+        else:
+            break
+
+    if wish == '2':       
+        print '\nRandomization program exited by user request.\n\n'
+        exit()
+    else:
+        pass       
+            
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# RANDOMIZATION FUNCTION
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def randomizeUnits(df,cond,unit,group,strat):
@@ -461,7 +539,9 @@ def main():
     # get csv file
     csvfile = whichCSV()
     # assign columns from csv file accordingly
-    df,u,g,s = whichColumns(csvfile)
+    df,cn,u,g,s = whichColumns(csvfile)
+    # check data
+    dataCheck(df,cn,u,g,s)
     # figure out number of experimental groups
     cond = numExperGroups()
     # randomize
@@ -481,4 +561,4 @@ def main():
 
 if __name__== "__main__":
     main()
-    print('Success! See local directory for label sheets and assignment table.')
+    print '\nSuccess! See local directory for label sheets and assignment table.\n'
