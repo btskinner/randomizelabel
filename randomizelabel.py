@@ -532,7 +532,7 @@ def makeLabels(df,labitems,labtype):
                 labval.append(str(row[sub.columns.values[labitems[i]]]))
             labstring = '\n'.join(labval)
             pl.add_label(labstring)
-        pl.output('addresslabels_' + str(eg) + '.pdf', 'F')
+        pl.output('assignmentlabels_' + str(eg) + '.pdf', 'F')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # MAIN COLLECTION FUNCTION
