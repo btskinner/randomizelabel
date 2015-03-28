@@ -4,20 +4,20 @@
 
 The purpose of this script is to:
 
-1. randomize a list of participants into treatment and control groups;  
-2. create labels for each group;
-3. create a master table that lists participant assignments.  
+1. randomize a list of participants into treatment and control groups
+2. create a label for each participant that can be affixed to his or her experimental materials
+3. create a master table that links each participant to his or her assignment 
 
-To do this, this file requires the following:  
+### Rationale
 
-1. a csv file with participant names and any information required if sampling should be blocked within groups
+This script was initially designed for use with a randomized control trial (RCT) among students based in classrooms. Students were to be randomized into experimental condition within classrooms. The randomization scheme required the flexibility to block randomization by student characteristics. The script may be extended, however, to any RCT in which participants are known ahead of time, who may be nested within groups, and who have observable and known characteristics upon which further stratification is required.
 
-This script assumes that treatment and control group members are receiving different written materials, but are unaware of that fact. Therefore, it is important that each participant gets the correct materials. Voila! Automatic labels that can be affixed to envelopes containing the proper materials!
+This script assumes that treatment and control group members will receive different written materials but are unaware of the difference, that is, the materials themselves will not indicate experimental condition. It's important, therefore, that each participant gets the correct materials, especially if participants take part in the experiment concurrently (e.g., all students within a class tested at the same time). As part of its randomzation routine, this script automatically creates labels that can be affixed to the proper materials ahead of time.
 
 ### Supplementary file requirements
   
 1. [Requires this code](https://pyfpdf.googlecode.com/hg-history/png_alpha/pdflabels.py) in the same directory saved as `pdflabels.py`. If not found, the script automatically downloads and saves the file.
-2. Requires a `*.csv` file with the list of persons you wish to randomize to various treatments.
+2. Requires a `*.csv` file with participant names and any information required if sampling should be blocked within groups (e.g., classroom id, student geneder, student race or ethnicity)
 
 ## To Use
 
@@ -80,8 +80,11 @@ If you choose `yes` then:
 
 Which column contains the groups?
 ```
+*NB: You cannot group on the primary randomization unit.*
 
 ### Decide if you want to stratify the randomization
+*NB: If you don't choose to randomize within groups, you won't be given the option to stratify. If you want to stratify across, for example, race/ethnicity or gender, but not within classrooms, then you should just chose to GROUP on that category*
+
 ```
 Should randomization be stratified (choose a number)?
             
@@ -96,12 +99,13 @@ If you choose `yes` then:
 ( 4 ) classid
 
 Which column contains the stratification category?
+NOTE: Stratification category must be integer.
 ```
-*NB: If you don't choose to randomize within groups, you won't be given the option to stratify. If you want to stratify across, for example, race/ethnicity or gender, but not within classrooms, then you should just chose to GROUP on that category*
+*NB: To prevent the potential for over-stratification based on different spellings or naming conventions (e.g., `female` vs `Female` vs `F` within the same column), the stratification category needs to be an integer. This may require preformatting of your input participant roster.*
 
 ### Decide the number of treatment groups
 
-The default is to only have a control group. Clearly, you probably want more. Choosing `1` means you want to have one treatment and one control group.
+The default is to only have a control group. It is likely that you will want more. Choosing `1` means you want to have one treatment and one control group.
 
 ```
 How many treatment conditions, excluding control?
@@ -144,7 +148,7 @@ classid
 Two primary files are placed in the working directory:
 
 1. `assignment.csv`
-2. `addresslabels_*.pdf` sheets with the labels
+2. `assignmentlabels_*.pdf` sheets with the labels
 
 #### `assignment.csv`
 
@@ -160,22 +164,22 @@ MMNjGO4CtvlL	| T
 
 For merging purposes, it's probably a good idea to randomize using a uniquely identifiable variable.
 
-#### `addresslabels_*.csv`
+#### `assignmentlabels_*.csv`
 
 There will be one `*.pdf` for the labels for each experimental group. If you only have one treatment and one control, the you will have two files:
 
 ```
-addresslabels_T.csv
-addresslabels_C.csv
+assignmentlabels_T.csv
+assignmentlabels_C.csv
 ```
 If you have, for example, two treatment groups and one control, you will have:
 ```
-addresslabels_T1.csv
-addresslabels_T2.csv
-addresslabels_C.csv
+assignmentlabels_T1.csv
+assignmentlabels_T2.csv
+assignemntlabels_C.csv
 ```
 The labels themselves **will not** indicate experimental group status (for obvious reasons) so this printing scheme will mitigate mix ups. The number of pages for each group will depend on the types of labels choosen.
 
 ## Acknowledgements
-* The good people who put together and contributed to [PyFPDF](https://code.google.com/p/pyfpdf/)
+* Originators and contributors to [PyFPDF](https://code.google.com/p/pyfpdf/)
 * [List of random names](http://listofrandomnames.com/) and [Mark Heckmann at ryouready](https://ryouready.wordpress.com/2008/12/18/generate-random-string-name/) for helping me generate my fake class data
