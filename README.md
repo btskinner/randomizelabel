@@ -12,7 +12,7 @@ The purpose of this script is to:
 
 This script was initially designed for use with a randomized control trial (RCT) among students based in classrooms. Students were to be randomized into experimental condition within classrooms. The randomization scheme required the flexibility to block randomization by student characteristics. The script may be extended, however, to any RCT in which participants are known ahead of time, who may be nested within groups, and who have observable and known characteristics upon which further stratification is required.
 
-This script assumes that treatment and control group members will receive different written materials but are unaware of the difference, that is, the materials themselves will not indicate experimental condition. It's important, therefore, that each participant gets the correct materials, especially if participants take part in the experiment concurrently (e.g., all students within a class tested at the same time). As part of its randomzation routine, this script automatically creates labels that can be affixed to the proper materials ahead of time.
+This script assumes that treatment and control group members will receive different written materials but are unaware of the difference, that is, the materials themselves will not indicate experimental condition. It's important, therefore, that each participant gets the correct materials, especially if participants take part in the experiment concurrently (e.g., all students within a class tested at the same time). As part of its randomization routine, this script automatically creates labels that can be affixed to the proper materials ahead of time.
 
 ### Supplementary file requirements
   
