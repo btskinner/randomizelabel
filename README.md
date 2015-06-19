@@ -1,4 +1,4 @@
-### Purpose
+## Purpose
 
 The purpose of this script is to:
 
@@ -6,13 +6,13 @@ The purpose of this script is to:
 2. create a label for each participant that can be affixed to his or her experimental materials
 3. create a master table that links each participant to his or her assignment 
 
-### Rationale
+## Rationale
 
 The script may be used for any randomized control trial (RCT) in which participants are known ahead of time, who may be nested within groups, and who have observable and known characteristics upon which further stratification is required.
 
 This script assumes that treatment and control group members will receive different materials but are unaware of the difference, that is, the materials themselves will not indicate experimental condition. It's important, therefore, that each participant gets the correct materials, especially if participants take part in the experiment concurrently. As part of its randomization routine, this script automatically creates labels that can be affixed to the proper materials ahead of time.
 
-### Supplementary file requirements
+## Supplementary file requirements
   
 1. [Requires this code](https://pyfpdf.googlecode.com/hg-history/png_alpha/pdflabels.py) in the same directory saved as `pdflabels.py`. If not found, the script automatically downloads and saves the file.
 2. Requires a `*.csv` file with participant names and any information required if sampling should be blocked within groups (e.g., classroom id, student geneder, student race or ethnicity)
