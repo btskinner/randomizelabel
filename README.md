@@ -1,5 +1,3 @@
-# randomizelabel.py
-
 ### Purpose
 
 The purpose of this script is to:
