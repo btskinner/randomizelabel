@@ -23,7 +23,7 @@ This script assumes that treatment and control group members will receive differ
 
 In terminal (works on OS X...not tested in other systems):
 
-```shell
+```shell-session
 cd ./randomizelabel
 python randomizelabel.py
 ```
@@ -32,7 +32,7 @@ python randomizelabel.py
 
 You will be prompted for the location of the `*.csv` file. The script will first search the local directory for all `*.csv` files and list them:
 
-```shell
+```shell-session
 ( 1 ) fakeclasslist.csv
 ( 2 ) File not in this directory
 
@@ -40,19 +40,19 @@ Which CSV file contains the names of those to be randomized?
 ```
 If you place the names file in the same directory, you can just choose it from here. If you don't, you should select the number for `File not in this directory`. You will then be prompted with:
 
-```shell
+```shell-session
 Please give full path to CSV file:
 ```
 
 You should give the full path (no `~`); for example:
 
-```shell
+```shell-session
 /Users/<username>/randomizelabel/fakeclasslist.csv
 ```
 
 ### Choose primary unit of randomization
 
-```shell
+```shell-session
 ( 1 ) id
 ( 2 ) name
 ( 3 ) racecat
@@ -62,7 +62,7 @@ Which column contains the randomization unit?
 ```
 
 ### Decide if you want to randomize within groups
-```shell
+```shell-session
 Are you randomizing with groups (choose a number)?
         
 (1) Yes     
@@ -70,7 +70,7 @@ Are you randomizing with groups (choose a number)?
 ```
 If you choose `yes` then:
 
-```shell
+```shell-session
 ( 1 ) id
 ( 2 ) name
 ( 3 ) racecat
@@ -83,7 +83,7 @@ Which column contains the groups?
 ### Decide if you want to stratify the randomization  
 *NB: If you don't choose to randomize within groups, you won't be given the option to stratify. If you want to stratify across, for example, race/ethnicity or gender, but not within classrooms, then you should just chose to GROUP on that category*
 
-```shell
+```shell-session
 Should randomization be stratified (choose a number)?
             
 (1) Yes          
@@ -91,7 +91,7 @@ Should randomization be stratified (choose a number)?
 ```
 If you choose `yes` then:  
 
-```shell
+```shell-session
 ( 1 ) id
 ( 2 ) name
 ( 3 ) racecat
@@ -114,7 +114,7 @@ Please enter an integer (choosing 0 means only control group)
 
 ### Choose the type of labels  
 
-```shell
+```shell-session
 ( 1 ) Apli-01277
 ( 2 ) Avery-L7163
 ( 3 ) Avery-3422
@@ -129,7 +129,7 @@ Which labels will you use?
 ```
 ### Choose what you want on the labels
 
-```shell
+```shell-session
 ( 1 ) id
 ( 2 ) name
 ( 3 ) racecat
@@ -142,7 +142,7 @@ What do you want on the printed labels
 
 The order matters. For example, `2,1,4`, would give:
 
-```shell
+```shell-session
 name
 id
 classid
