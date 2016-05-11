@@ -23,7 +23,7 @@ This script assumes that treatment and control group members will receive differ
 
 In terminal (works on OS X...not tested in other systems):
 
-```
+```shell
 cd ./randomizelabel
 python randomizelabel.py
 ```
@@ -32,7 +32,7 @@ python randomizelabel.py
 
 You will be prompted for the location of the `*.csv` file. The script will first search the local directory for all `*.csv` files and list them:
 
-```
+```shell
 ( 1 ) fakeclasslist.csv
 ( 2 ) File not in this directory
 
@@ -40,19 +40,19 @@ Which CSV file contains the names of those to be randomized?
 ```
 If you place the names file in the same directory, you can just choose it from here. If you don't, you should select the number for `File not in this directory`. You will then be prompted with:
 
-```
+```shell
 Please give full path to CSV file:
 ```
 
 You should give the full path (no `~`); for example:
 
-```
+```shell
 /Users/<username>/randomizelabel/fakeclasslist.csv
 ```
 
 ### Choose primary unit of randomization
 
-```
+```shell
 ( 1 ) id
 ( 2 ) name
 ( 3 ) racecat
@@ -62,7 +62,7 @@ Which column contains the randomization unit?
 ```
 
 ### Decide if you want to randomize within groups
-```
+```shell
 Are you randomizing with groups (choose a number)?
         
 (1) Yes     
@@ -70,7 +70,7 @@ Are you randomizing with groups (choose a number)?
 ```
 If you choose `yes` then:
 
-```
+```shell
 ( 1 ) id
 ( 2 ) name
 ( 3 ) racecat
@@ -80,17 +80,18 @@ Which column contains the groups?
 ```
 *NB: You cannot group on the primary randomization unit.*
 
-### Decide if you want to stratify the randomization
+### Decide if you want to stratify the randomization  
 *NB: If you don't choose to randomize within groups, you won't be given the option to stratify. If you want to stratify across, for example, race/ethnicity or gender, but not within classrooms, then you should just chose to GROUP on that category*
 
-```
+```shell
 Should randomization be stratified (choose a number)?
             
 (1) Yes          
 (2) No
 ```
-If you choose `yes` then:
-```
+If you choose `yes` then:  
+
+```shell
 ( 1 ) id
 ( 2 ) name
 ( 3 ) racecat
@@ -110,8 +111,10 @@ How many treatment conditions, excluding control?
         
 Please enter an integer (choosing 0 means only control group)
 ```
-### Choose the type of labels
-```
+
+### Choose the type of labels  
+
+```shell
 ( 1 ) Apli-01277
 ( 2 ) Avery-L7163
 ( 3 ) Avery-3422
@@ -125,7 +128,8 @@ Please enter an integer (choosing 0 means only control group)
 Which labels will you use?
 ```
 ### Choose what you want on the labels
-```
+
+```shell
 ( 1 ) id
 ( 2 ) name
 ( 3 ) racecat
@@ -135,12 +139,15 @@ Which labels will you use?
 What do you want on the printed labels 
 (select desired columns by number, separated by commas)?
 ```
+
 The order matters. For example, `2,1,4`, would give:
-```
+
+```shell
 name
 id
 classid
 ```
+
 ## Output
 
 Two primary files are placed in the working directory:
@@ -170,12 +177,15 @@ There will be one `*.pdf` for the labels for each experimental group. If you onl
 assignmentlabels_T.csv
 assignmentlabels_C.csv
 ```
+
 If you have, for example, two treatment groups and one control, you will have:
+
 ```
 assignmentlabels_T1.csv
 assignmentlabels_T2.csv
 assignemntlabels_C.csv
 ```
+
 The labels themselves **will not** indicate experimental group status (for obvious reasons) so this printing scheme will mitigate mix ups. The number of pages for each group will depend on the types of labels choosen.
 
 ## Acknowledgements
