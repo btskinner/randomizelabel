@@ -113,6 +113,7 @@ Please enter an integer (choosing 0 means only control group)
 ```
 
 ### Choose the type of labels  
+  
 
 ```bash
 ( 1 ) Apli-01277
@@ -127,7 +128,9 @@ Please enter an integer (choosing 0 means only control group)
 
 Which labels will you use?
 ```
-### Choose what you want on the labels
+
+### Choose what you want on the labels  
+
 
 ```bash
 ( 1 ) id
@@ -140,7 +143,8 @@ What do you want on the printed labels
 (select desired columns by number, separated by commas)?
 ```
 
-The order matters. For example, `2,1,4`, would give:
+The order matters. For example, `2,1,4`, would give:  
+
 
 ```bash
 name
