@@ -1,8 +1,9 @@
+#!/usr/bin/env python3
+
 ################################################################################
 #
 # FILE: randomizelabel.py
 # AUTH: Benjamin Skinner
-# INIT: 13 March 2015
 #
 ################################################################################
 
@@ -19,513 +20,354 @@
 # (1) a csv file with participant names and any information required if
 #     sampling should be blocked within groups
 #   
-# NB: requires this code in the same directory saved as pdflabels.py
-# https://pyfpdf.googlecode.com/hg-history/png_alpha/pdflabels.py
 # ------------------------------------------------------------------------------
 
 # //////////////////////////////////////////////////////////////////////////////
 # LIBRARIES
 # //////////////////////////////////////////////////////////////////////////////
 
-import pandas as pd                       # for working with csv
-from random import randint, shuffle       # for randomizing
-import math
-from fpdf import FPDF                     # for printing labels
-import os                                 # for checking for local file
-import urllib                             # for downloading file
-import numpy as np                        # for checking column data types
+import pandas as pd      # for working with csv
+import numpy  as np      # for checking column data types
+import random as rd      # for randomizing
+import math              # for ceiling function
+import fpdf              # for printing labels
+import os                # for checking for local file
+import urllib.request    # for downloading file
 
-# don't need warning about this
-pd.options.mode.chained_assignment = None  # default='warn'
+# //////////////////////////////////////////////////////////////////////////////
+# DOWNLOAD TEMPLATE
+# //////////////////////////////////////////////////////////////////////////////
 
-# check for pdflabels.py; download if not there
 if not os.path.exists('./pdflabels.py'):
-    print('\nrequired file nonexistent...downloading...')
-    url = 'https://pyfpdf.googlecode.com/hg-history/png_alpha/pdflabels.py'
-    urllib.urlretrieve(url, 'pdflabels.py')
+    print('Required file nonexistent...downloading...')
+    url = 'https://raw.githubusercontent.com/reingart/pyfpdf/master/tools/'
+    f = 'pdflabels.py'
+    urllib.request.urlretrieve(url + f, f)
 
 import pdflabels
 
-# modify padding to make larger
-# pdflabels.__init__.padding = pdflabels.convert_metric(5, 'mm')
-
 # //////////////////////////////////////////////////////////////////////////////
-# PYTHON FUNCTIONS
+# FUNCTIONS
 # //////////////////////////////////////////////////////////////////////////////
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# USER PROMPTS
+# UTILITY
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def whichCSV():
-    while True:
-        prompt = '\nWhich CSV file contains the names of those to be randomized?\n\n'
-        print '\n'
-        csvfiles = []
-        for f in os.listdir('./'):
-            if f.endswith('.csv'):
-                csvfiles.append(f)
-        csvfiles.append('File not in this directory')
-        for f in csvfiles:
-            print '(', csvfiles.index(f) + 1, ')', os.path.basename(f)
-        csvfilenum = raw_input(prompt)
+def printOpts(optlist):
+     for l in optlist:
+          print('(', optlist.index(l) + 1, ')', l)
 
-        # error handling: only digits allowed
-        if not csvfilenum.isdigit():
-            print '\nERROR: Only digits are accepted; choose again.'
-            continue
-        else:
-            csvfilenum = int(csvfilenum) - 1
+def promptMessage(text):
+     print('\n')
+     print('-' * len(text))
+     print(text)
+     print('-' * len(text), end = '\n\n')
 
-        # error handling: only proper integers allowed
-        if csvfilenum > len(csvfiles) - 1 or csvfilenum < 0:
-            print '\nERROR: Number out of range; choose again.'
-            continue
-        else:
-            break
-    while True:
-        if csvfilenum == len(csvfiles) - 1:
-            prompt = '\n give full path to CSV file:\n\n'
-            csvfile = raw_input(prompt)
-        else:
-            csvfile = os.path.abspath(csvfiles[csvfilenum])
+def errorMessage(text):
+     o = len(text) + 7
+     print('\n')
+     print('*' * o)
+     print('ERROR: ', end = '')
+     print(text)
+     print('*' * o, end = '\n\n')
 
-        # error handling
-        if not csvfile:
-            print '\nERROR: No csv file given; choose a file.'
-            continue
-        else:
-            break
+def matchMessage(optlist, rc = None, gc = None, sc = None):
+     if rc is not None:
+          rc = optlist[rc]
+     else:
+          rc = ''
+     if gc is not None:
+          gc = optlist[gc]
+     else:
+          gc = ''
+     if sc is not None:
+          sc = ', '.join([optlist[i] for i in sc])
+     else:
+          sc = ''
+     print('')
+     print('Randomization unit: ' + rc)
+     print('Blocking group:     ' + gc)
+     print('Stratify on:        ' + sc, end = '\n\n')
+     
+def pickOpt(prompt, optlist, multopts = False):
 
-    return csvfile
-    
-def whichColumns(csvf):   
+     em1 = 'Only digits are accepted. Please choose again.'
+     em2 = 'Please choose again from among options.'
 
-    # open csv file; read csv file
-    df = pd.read_csv(csvf)
+     if multopts:
+          while True:
+               flag = 0
+               promptMessage(prompt)
+               printOpts(optlist)
+               try:
+                    choice = [int(x) for x in input('\nCHOICE: ').split()]
 
-    # figure out which columns are which: randomization unit
-    headings = list(df.columns.values)
-    while True:
-        prompt = "\n\nWhich column contains the randomization unit?\n\n"
-        print '\n'
-        for name in headings:
-            print '(', headings.index(name) + 1, ')', name
-        unitcol = raw_input(prompt)
-
-        # error handling: only digits allowed
-        if not unitcol.isdigit():
-            print '\nERROR: Only digits are accepted; choose again.'
-            continue
-        else:
-            unitcol = int(unitcol) - 1
-
-        # error handling: only proper integers allowed
-        if unitcol > len(headings) - 1 or unitcol < 0:
-            print '\nERROR: Number out of range; choose again.'
-            continue
-        else:
-            pass
-
-        # randomization unit not unique: exit program
-        if len(df.iloc[:,unitcol]) > len(df.iloc[:,unitcol].unique()):
-            print '\nRandomization unit not unique; choose another unit.'
-            continue
-        else:
-            break
-
-    # figure out which columns are which: blocking level
-    while True:
-        prompt = """\n\nAre you randomizing within groups (choose a number)?
-        \n(1) Yes
-        \n(2) No
-        \n\n"""
-        wish = raw_input(prompt)
-        options = ['1','2']
-
-        # error handling
-        if wish not in options:
-            print '\nERROR: Number not in options; choose again'
-            continue
-        else:
-            break
-
-    # randomize within groups
-    if wish == '1':
-        while True:
-            prompt = "\n\nWhich column contains the groups?\n\n"
-            print '\n'
-            for name in headings:
-                print '(', headings.index(name) + 1, ')', name
-            groupcol = raw_input(prompt)
-    
-            # error handling: only digits allowed
-            if not groupcol.isdigit():
-                print '\nERROR: Only digits are accepted; choose again.'
-                continue
-            else:
-                groupcol = int(groupcol) - 1
-
-            # error handling: only proper integers allowed
-            if groupcol > len(headings) - 1 or groupcol < 0:
-                print '\nERROR: Number out of range; choose again.'
-                continue
-            else:
-                pass
-
-            # error handling: cannot be the same as unitcol
-            if groupcol == unitcol:
-                print '\nERROR: Group category cannot be the same as randomization unit; choose again.'
-                continue
-            else:
-                break
-        
-    elif wish == '2':
-        groupcol = None
-
-    # no stratification if without grouping (should just group otherwise) 
-    if groupcol is not None:
-
-        # figure out which columns are which: stratification
-        while True:
-            prompt = """\n\nShould randomization be stratified (choose a number)?
-            \n(1) Yes
-            \n(2) No
-            \n\n"""
-            wish = raw_input(prompt)
-            options = ['1','2']   
-
-            # error handling
-            if wish not in options:
-                print '\nERROR: Number not in options; choose again'
-                continue
-            else:
-                break       
-
-        # stratified groupings
-        if wish == '1':
-            while True:
-                prompt = """\n\nWhich column contains the stratification category?
-                \nNOTE: Stratification category must be integer.
-                \n\n"""
-                print '\n'
-                for name in headings:
-                    print '(', headings.index(name) + 1, ')', name
-                stratcol = raw_input(prompt)
-
-                # error handling: only digits allowed
-                if not stratcol.isdigit():
-                    print '\nERROR: Only digits are accepted; choose again.'
+               except ValueError:
+                    errorMessage(em1)
                     continue
-                else:
-                    stratcol = int(stratcol) - 1
 
-                # error handling: only proper integers allowed
-                if stratcol > len(headings) - 1 or stratcol < 0:
-                    print '\nERROR: Number out of range; choose again.'
+               if len(choice) == 0 | len(choice) > len(optlist):
+                    errorMessage(em2)
                     continue
-                else:
-                    pass
 
-                # error handling: cannot be the same as groupcol
-                if stratcol == groupcol:
-                    print '\nERROR: Stratification category cannot be the same as group; choose again.'
-                    continue
-                else:
-                    pass
-
-                # error handling: cannot be the same as groupcol
-                if stratcol == unitcol:
-                    print '\nERROR: Stratification category cannot be the same as randomization unit; choose again.'
-                    continue
-                else:
-                    pass
-
-                # error handling: column data type must be int64
-                if df.iloc[:,stratcol].dtype != np.int64:
-                    while True:
-                        totop = False
-                        print('\nERROR: Stratification column not integer; what would you like to do?')
-                        prompt = """\n\n(1) Choose another column.
-                        \n(2) Move forward without stratifying.
-                        \n\n"""
-                        wish2 = raw_input(prompt)
-                        options = ['1','2']
-                        
-                        # error handling
-                        if wish2 not in options:
-                            print '\nERROR: Number not in options; choose again'
-                            continue
-
-                        elif wish2 == '1':
-                            totop = True; break
-                        else:
-                            break
-                    if totop:
-                        continue
-                    else:
-                        stratcol = None
-                        break
-                else:
+               for i in choice:
+                    if i > len(optlist) or i < 1:
+                         errorMessage(em2)
+                         flag = 1
+                         continue
+               if flag == 0:
                     break
-            
-        elif wish == '2':
-            stratcol = None
-    else:
-        stratcol = None
 
-    # return unit, group, and stratification columns
-    return df, headings, unitcol, groupcol, stratcol
+          return [x - 1 for x in choice]
+                
+     while True:
+          promptMessage(prompt)
+          printOpts(optlist)
+          try:
+               choice = int(input('\nCHOICE: '))
 
-def numExperGroups():
+          except ValueError:
+               errorMessage(em1)
+               continue
+               
+          if choice > len(optlist) or choice < 1:
+               errorMessage(em2)
+               continue
+          return choice - 1
 
-    # ask for number of treatment conditions
-    while True:
-        prompt = """\n\nHow many treatment conditions, excluding control?
-        \nPlease enter an integer (choosing 0 means only control group).
-        \n\n"""
-        wish = raw_input(prompt)
+# h/t http://stackoverflow.com/a/35415963
+def flatten(irrlist):
+     if isinstance(irrlist, int):
+          return [irrlist]
+     flist = []
+     for i in irrlist:
+          if not isinstance(i, list):
+               flist.append(i)
+          else:
+               flist.extend(flatten(i))
+     return flist
 
-        # error handling (needs to be an integer)
-        if not wish.isdigit() or wish < 0:
-            print '\nERROR: Non-digit entered or number out of range; choose a proper number.'
-            continue
-        else:
-            wish = int(wish)
-            break
-        
-    # init number of treatment and control based on input
-    if wish == 1:
-        conditions = ['C','T']
-    else:
-        conditions = ['C'] + ['T' + str(i + 1) for i in range(wish)]
+def inList(new, old):
+     new = flatten(new)
+     old = flatten(old)
+     reps = []
+     for n in new:
+          if n in old:
+               reps.append(n)
+     return reps
 
-    # return conditions
-    return conditions
-
-def whichLabels():
-
-    # get label options
-    labopts = list(pdflabels.commercial_labels.keys())
-
-    # ask for types of labels to be used
-    while True:
-        prompt = "\n\nWhich labels will you use?\n\n"
-        print '\n'
-        for name in labopts:
-            print '(', labopts.index(name) + 1, ')', name
-        labs = raw_input(prompt)
-
-        # error handling: only digits allowed
-        if not labs.isdigit():
-            print '\nERROR: Only digits are accepted; choose again.'
-            continue
-        else:
-            labs = int(labs) - 1
-
-        # error handling
-        if labs > len(labopts) - 1 or labs < 0:
-            print '\nERROR: Number out of range; choose a proper number.' 
-            continue
-        else:
-            break
-
-    # return name of labels to be used
-    labtype = labopts[labs]; return labtype
-
-def whatLabels(df):
-
-    # get column options
-    colopts = list(df.columns.values)
-
-    # ask for what is wanted on labels
-    while True:
-        prompt = """\n\nWhat do you want on the printed labels?
-        \nPlease select desired columns by number, separated by commas.\n\n"""
-        print '\n'
-        for name in colopts:
-            print '(', colopts.index(name) + 1, ')', name
-        labitems = list(raw_input(prompt).split(','))      
-
-        # error handling: correct format
-        try:
-            labitems = [int(i) - 1 for i in labitems]
-        except ValueError:
-            print '\nERROR: Use integers separated by commas; choose again.'
-            continue
-
-        # error handling: make sure columns exist     
-        try:
-            [df.columns.values[i] for i in labitems]
-        except (TypeError, ValueError, IndexError):
-            print '\nERROR: Number out of range; choose a proper number.'
-            continue
-
-        # error handling: no negative columns (means person chose 0)
-        if any(x < 0 for x in labitems):
-            print '\nERROR: Number out of range; choose a proper number.'
-            continue
-        else:
-            pass
-
-        # error handling: too many columns selected 
-        if len(labitems) > len(colopts) - 1:
-            print '\nERROR: Too many columns chosen; choose again.'
-            continue
-        else:
-            pass
-
-        # error handling: too few columns selected 
-        if not labitems:
-            print '\nERROR: Too few columns chosen; choose again.'
-            continue
-        else:
-            break
-
-    # return columns for labels
-    return labitems
+def badOpt(choice, header, rc = None, gc = None):
+     prior = flatten([rc, gc])
+     prior = [i for i in prior if i is not None]
+     check = inList(choice, prior)
+     if len(check) > 0:
+          return True
+     return False
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # DATA CHECK FUNCTION
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def dataCheck(df,colnames,unitcol,groupcol,stratcol):
+def dataCheck(df, header, ru, group, strat):
+     
+     # get summary stats for each non-None column
+     cols = flatten([ru, group, strat])
+     cols = [x for x in cols if x is not None]
 
-    # add each column to list; subset to those that are not None
-    allcols = [unitcol,groupcol,stratcol]; cols = []
-    cols = [a for a in allcols if a is not None]
+     # print for review
+     for c in cols:
+          name = header[c]
+          uniq = sorted(list(df.iloc[:,c].unique()))
+          if name == header[ru]:
+               t = 'randomization unit'
+          elif name == header[group]:
+               t = 'grouping category'
+          else:
+               t = 'stratification category'
+          print('\n' + '=' * 80, end = '\n\n')
+          print('For the ' + t + ': {0}'.format(name))
+          print('\n' + '.' * 80, end = '\n\n')
+          print('Number of unique values = {0}'.format(len(uniq)))
+          if name != header[ru]:
+               print('Unique values: ', end = '\n\n')
+               for i in uniq:
+                    print(i)   
+          print('\n' + '=' * 80, end = '\n\n')
 
-    # get summary stats for each non-None column; nested dictionary
-    out = {}
-    for c in cols:
-        out[colnames[c]] = {}
-        i = list(df.iloc[:,c].unique()); n = len(i)
-        out[colnames[c]]['uniqueitems'] = sorted(i)
-        out[colnames[c]]['number'] = n
+     # confirm that user wishes to continue
+     prompt = 'Does all look as it should?'
+     choice = pickOpt(prompt, ['Yes, continue', 'No, please exit']) 
+          
+     if choice == 1:       
+          prompt = 'Randomization program exited by user request.'
+          promptMessage(prompt)
+          exit()
+          
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# USER PROMPTS
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    # print to screen
-    for key, value in out.iteritems():
-        # don't want to print all unit ids...too many/unnecessary
-        if key == df.columns.values[unitcol]:
-            print ('\n' + '=' * 80 + '\n')
-            print 'For the randomization unit: %s' % (key)
-            print ('\n' + '.' * 80 + '\n')
-            print 'Number of unique values = %s' % (out[key]['number'])
-            print ('\n' + '=' * 80 + '\n')
-        elif key == df.columns.values[groupcol]:
-            print ('\n' + '=' * 80 + '\n')
-            print 'For the grouping category: %s' % (key)
-            print ('\n' + '.' * 80 + '\n')
-            print 'Number of unique values = %s\n' % (out[key]['number'])
-            print 'Unique items:\n\n%s' % (out[key]['uniqueitems'])
-            print ('\n' + '=' * 80 + '\n')
-        else:
-            print ('\n' + '=' * 80 + '\n')
-            print 'For the stratification category: %s' % (key)
-            print ('\n' + '.' * 80 + '\n')
-            print 'Number of unique values = %s\n' % (out[key]['number'])
-            print 'Unique items:\n\n%s' % (out[key]['uniqueitems'])
-            print ('\n' + '=' * 80 + '\n')
+def whichCSV():
 
-    # confirm that user wishes to continue
+     prompt = 'Which CSV file contains the names of those to be randomized?'
+     fopts = []
+     for f in os.listdir('./'):
+          if f.endswith('.csv'):
+               fopts.append(os.path.basename(f))
+     fopts.append('File not in this directory')
+               
+     choice = pickOpt(prompt, fopts)
+
+     while True:
+          if choice == len(fopts) - 1:
+               csvfile = input('Please give full path to CSV file: ')
+          else:
+               csvfile = os.path.abspath(fopts[choice])
+               
+          try:
+               df = pd.read_csv(csvfile)
+
+          except OSError:
+               errorMessage('Unable to read CSV. Please choose another file.')
+               continue
+          else:
+               return df
+       
+def whichColumn(df, header, prompt, multopts = False, unique = False):
+     
+     while True:
+          choice = pickOpt(prompt, header, multopts)
+          if unique and len(df.iloc[:,choice]) > len(df.iloc[:,choice].unique()):
+               errorMessage('Values not unique. Please choose another column.')
+               continue
+          return choice
+
+def randSettings(df, header):
+
+     # randomization unit
+     prompt = 'Which column contains the randomization unit?'
+     ru = whichColumn(df, header, prompt, unique = True)
+     
+     # blocking
+     prompt = 'Are you randomizing within groups?'
+     choice = pickOpt(prompt, ['Yes', 'No'])
+     
+     if choice == 1:
+          group = None
+          strat = None
+          return ru, group, strat
+
+     while True:
+          prompt = 'Which column contains the groups?'
+          choice = whichColumn(df, header, prompt)
+          if badOpt(choice, header, rc = ru):
+               errorMessage('Column already chosen. Please choose again.')
+               matchMessage(header, rc = ru)
+               continue
+          group = choice
+          break
+
+     # stratification
+     prompt = 'Should randomization be stratified?'
+     choice = pickOpt(prompt, ['Yes', 'No'])
+
+     if choice == 1:
+          strat = None
+          return ru, group, strat
+
+     while True:
+          prompt = 'Which column(s) contains the stratification category?'
+          choice = whichColumn(df, header, prompt, multopts = True)
+          if badOpt(choice, header, rc = ru, gc = group):
+               errorMessage('Column already chosen. Please choose again.')
+               matchMessage(header, rc = ru, gc = group)
+               continue
+          strat = choice
+          break
+     
+     return ru, group, strat
+    
+def numExperGroups():  
+
+     while True:
+          prompt = 'How many treatment conditions, excluding control?'
+          choice = pickOpt(prompt, [1,2,3,4,5])
+          break
+
+     if choice == 0:
+          conditions = ['C','T']
+     else:
+          conditions = ['C'] + ['T' + str(i + 1) for i in range(choice)]
+
+     return conditions
+
+def whichLabelType():
+
+    labopts = list(sorted(pdflabels.commercial_labels.keys()))
+
     while True:
-        prompt = """\n\nDoes all look as it should?
-            \n(1) Yes, proceed with program.
-            \n(2) No, input data need to be adjusted; please exit.
-            \n\n"""
-        wish = raw_input(prompt)
-        options = ['1','2']   
+        prompt = 'Which labels will you use?'
+        choice = pickOpt(prompt, labopts)
+        break
 
-        # error handling
-        if wish not in options:
-            print '\nERROR: Number not in options; choose again.'
-            continue
-        else:
-            break
+    return labopts[choice]
 
-    if wish == '2':       
-        print '\nRandomization program exited by user request.\n\n'
-        exit()
-    else:
-        pass       
-            
+def whichLabelOpts(df, header):
+
+     prompt = 'What do you want on the printed labels?'
+     labitems = whichColumn(df, header, prompt, multopts = True)
+     return labitems
+               
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # RANDOMIZATION FUNCTION
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def randomizeUnits(df,cond,unit,group,strat):
+def randomizeUnits(df, header, cond, ru, group = None, strat = None):
 
-    # straight-forward randomization (no grouping or stratification)
-    if group is None and strat is None:
-        # assign random integer for each unit that is length of conditions
-        a = [randint(0, len(cond) - 1) for x in range(len(df.index))]
-        # map condition value onto assignment value
-        a = [cond[i] for i in a]
-        # add to dataframe
-        df['assign'] = a
-        # return the dataframe with assignment
-        return df
+     # group_by categories, dropping None
+     gbc = [x for x in flatten([group, strat]) if x is not None]
 
-    # within groups, no stratification
-    if group is not None and strat is None:
-        # subset date by unique groups; init blank dataframe
-        gp = list(df.iloc[:,group].unique()); out = pd.DataFrame()
-        for g in gp:
-            # subset data
-            sub = df[df.iloc[:,group] == g]
-            # get relatively even number of each condition within group
-            a = cond * int(math.ceil(float(len(sub.index)) / len(cond)))
-            # shuffle; reduce to size of dataframe by chopping off end
-            shuffle(a); a = a[0:len(sub.index)]
-            # add to subdataframe
-            sub['assign'] = a
-            # append
-            out = out.append(sub, ignore_index = True)
+     # simple random (no blocking)
+     if len(gbc) == 0:
+          a = cond * int(math.ceil(float(len(df.index)) / len(cond)))
+          df['assign'] = rd.sample(a, len(df.index))
+          return df
 
-        # return the dataframe with assignment
-        df = out; return df
+     # within blocks/groups
+     gbc = [header[x] for x in gbc]
 
-    # within groups, with stratification
-    if group is not None and strat is not None:
-        # subset date by unique groups; init blank dataframe
-        gp = list(df.iloc[:,group].unique())
-        st = list(df.iloc[:,strat].unique())
-        out = pd.DataFrame()
-        for g in gp:
-            sub = df[df.iloc[:,group] == g]
-            for s in st:
-                # subset data
-                ssub = sub[sub.iloc[:,strat] == s]
-                # get relatively even number of each condition within group
-                a = cond * int(math.ceil(float(len(ssub.index)) / len(cond)))
-                # shuffle; reduce to size of dataframe by chopping off end
-                shuffle(a); a = a[0:len(ssub.index)]
-                # add to subdataframe
-                ssub['assign'] = a
-                # append
-                out = out.append(ssub, ignore_index = True)
+     assignment = []
+     for index, value in df.groupby(gbc).size().iteritems():
+          a = cond * int(math.ceil(value / len(cond)))
+          a = rd.sample(a, value)
+          assignment.append(a)
 
-        # return the dataframe with assignment
-        df = out; return df
+     assignment = flatten(assignment)
+
+     df['assign'] = assignment
+
+     return df
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # OUT/PRINT FUNCTIONS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             
-def outTable(df,unit):
-    # subset dataframe (don't need everything for this list); output
-    cols = [df.columns.values[unit], 'assign']
+def outTable(df, header, ru):
+    cols = [header[ru], 'assign']
     df.to_csv('assignment.csv', index = False, columns = cols)
 
-def makeLabels(df,labitems,labtype):
+def makeLabels(df, labitems, labtype):
     # get unique experimental groups
     expergroup = list(df['assign'].unique())
     # loop through each experimental group
     for eg in expergroup:
-        # subset data
-        sub = df[df.assign == eg]
-        # move through rows adding labels with items as choosen; changing padding; init page
-        pl = pdflabels.PDFLabel(labtype); pl.padding = 7; pl.add_page()
+        sub = df[df['assign'] == eg]
+
+        pl = pdflabels.PDFLabel(labtype)
+        pl.padding = 7
+        pl.add_page()
+
         for index, row in sub.iterrows():
             labval = []
             for i in range(len(labitems)):
@@ -539,29 +381,31 @@ def makeLabels(df,labitems,labtype):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def main():
-    # get csv file
-    csvfile = whichCSV()
-    # assign columns from csv file accordingly
-    df,cn,u,g,s = whichColumns(csvfile)
-    # check data
-    dataCheck(df,cn,u,g,s)
-    # figure out number of experimental groups
-    cond = numExperGroups()
-    # randomize
-    df = randomizeUnits(df,cond,u,g,s)
-    # output assignment table as csv
-    outTable(df,u)
-    # get label types
-    labtype = whichLabels()
-    # get label options
-    labitems = whatLabels(df)
-    # make labels
-    makeLabels(df,labitems,labtype)
+     # get csv file
+     df = whichCSV()
+     header = list(df.columns.values)
+     # randomization settings
+     ru, group, strat = randSettings(df, header)
+     # data check
+     dataCheck(df, header, ru, group, strat)
+     # conditions
+     cond = numExperGroups()
+     # randomize
+     df = randomizeUnits(df, header, cond, ru, group, strat)
+     # output assignment table as csv
+     outTable(df, header, ru)
+     # label type
+     labtype = whichLabelType()
+     # label items
+     labitems = whichLabelOpts(df, header)
+     # make labels
+     makeLabels(df, labitems, labtype)
 
 # //////////////////////////////////////////////////////////////////////////////
 # RUN THE SCRIPT
 # //////////////////////////////////////////////////////////////////////////////
 
-if __name__== "__main__":
+if __name__ == '__main__':
     main()
-    print '\nSuccess! See local directory for label sheets and assignment table.\n'
+    text = 'Success! See local directory for label sheets and assignment table.'
+    promptMessage(text)

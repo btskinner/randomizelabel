@@ -14,29 +14,40 @@ This script assumes that treatment and control group members will receive differ
 
 ## Supplementary file requirements
   
-1. [Requires this code](https://pyfpdf.googlecode.com/hg-history/png_alpha/pdflabels.py) in the same directory saved as `pdflabels.py`. If not found, the script automatically downloads and saves the file.
-2. Requires a `*.csv` file with participant names and any information required if sampling should be blocked within groups (e.g., classroom id, student geneder, student race or ethnicity)
+1. [Requires this code](https://raw.githubusercontent.com/reingart/pyfpdf/master/tools/pdflabels.py) in the same directory saved as `pdflabels.py`. If not found, the script automatically downloads and saves the file.
+2. Requires a `*.csv` file with participant names and any information required if sampling should be blocked within groups (e.g., classroom id, student gender, student race or ethnicity)
 
 ## To Use
 
 ### Initialize
 
-In terminal (works on OS X...not tested in other systems):
+In terminal (works on OS X...not tested in other systems), navigate to the script directory and type: 
 
 ```bash
-cd ./randomizelabel
-python randomizelabel.py
+./randomizelabel.py
 ```
+
+or, if you want to set the Python interpreter manually:
+
+```bash
+python<3> randomizelabel.py
+```
+
+Note that this script requires Python 3.x.
 
 ### Locate `*.csv` file
 
 You will be prompted for the location of the `*.csv` file. The script will first search the local directory for all `*.csv` files and list them:
 
 ```bash
+------------------------------------------------------------
+Which CSV file contains the names of those to be randomized?
+------------------------------------------------------------
+
 ( 1 ) fakeclasslist.csv
 ( 2 ) File not in this directory
 
-Which CSV file contains the names of those to be randomized?
+CHOICE: 
 ```
 If you place the names file in the same directory, you can just choose it from here. If you don't, you should select the number for `File not in this directory`. You will then be prompted with:
 
@@ -53,103 +64,213 @@ You should give the full path (no `~`); for example:
 ### Choose primary unit of randomization
 
 ```bash
-( 1 ) id
-( 2 ) name
-( 3 ) racecat
-( 4 ) classid
-
+---------------------------------------------
 Which column contains the randomization unit?
+---------------------------------------------
+
+( 1 ) classid
+( 2 ) id
+( 3 ) name
+( 4 ) gender
+( 5 ) racecat
+
+CHOICE: 
 ```
+*NB: Randomization unit column cannot contain duplicate values.*
 
 ### Decide if you want to randomize within groups
 ```bash
-Are you randomizing with groups (choose a number)?
-        
-(1) Yes     
-(2) No
+----------------------------------
+Are you randomizing within groups?
+----------------------------------
+
+( 1 ) Yes
+( 2 ) No
+
+CHOICE:
 ```
 If you choose `yes` then:
 
 ```bash
-( 1 ) id
-( 2 ) name
-( 3 ) racecat
-( 4 ) classid
-
+---------------------------------
 Which column contains the groups?
+---------------------------------
+
+( 1 ) classid
+( 2 ) id
+( 3 ) name
+( 4 ) gender
+( 5 ) racecat
 ```
 *NB: You cannot group on the primary randomization unit.*
 
 ### Decide if you want to stratify the randomization  
-*NB: If you don't choose to randomize within groups, you won't be given the option to stratify. If you want to stratify across, for example, race/ethnicity or gender, but not within classrooms, then you should just chose to GROUP on that category*
+*NB: If you don't choose to randomize within groups, you won't be given the option to stratify. If you want to stratify across, for example, race/ethnicity or gender, but not within classrooms, then you should just chose to GROUP on that category. Though these terms have specific meanings, they are functionally the same as far as the randomization code is concerned.*
 
 ```bash
-Should randomization be stratified (choose a number)?
-            
-(1) Yes          
-(2) No
+-----------------------------------
+Should randomization be stratified?
+-----------------------------------
+
+( 1 ) Yes
+( 2 ) No
 ```
 If you choose `yes` then:  
 
 ```bash
-( 1 ) id
-( 2 ) name
-( 3 ) racecat
-( 4 ) classid
+-----------------------------------------------------
+Which column(s) contains the stratification category?
+-----------------------------------------------------
 
-Which column contains the stratification category?
-NOTE: Stratification category must be integer.
+( 1 ) classid
+( 2 ) id
+( 3 ) name
+( 4 ) gender
+( 5 ) racecat
 ```
-*NB: To prevent the potential for over-stratification based on different spellings or naming conventions (e.g., `female` vs `Female` vs `F` within the same column), the stratification category needs to be an integer. This may require preformatting of your input participant roster.*
+You may choose more than one category. Separate multiple choices with a space.
+
+### Check your options
+
+To make that you get what you are expecting, the program will give you some descriptive information about your randomization choices. For example, if you chose to randomize on `id`, group on `classid`, and stratify across `gender` and `racecat`, you will see the following:
+
+```bash
+================================================================================
+
+For the randomization unit: id
+
+................................................................................
+
+Number of unique values = 400
+
+================================================================================
+
+
+================================================================================
+
+For the grouping category: classid
+
+................................................................................
+
+Number of unique values = 17
+Unique values: 
+
+ENGL101.01
+ENGL101.02
+ENGL101.03
+ENGL101.04
+ENGL101.05
+ENGL101.06
+ENGL101.07
+ENGL101.08
+ENGL101.09
+ENGL101.10
+ENGL101.11
+ENGL101.12
+ENGL101.13
+ENGL101.14
+ENGL101.15
+ENGL101.16
+ENGL101.17
+
+================================================================================
+
+
+================================================================================
+
+For the stratification category: gender
+
+................................................................................
+
+Number of unique values = 2
+Unique values: 
+
+Female
+Male
+
+================================================================================
+
+
+================================================================================
+
+For the stratification category: racecat
+
+................................................................................
+
+Number of unique values = 3
+Unique values: 
+
+1
+2
+3
+
+================================================================================
+
+
+```
 
 ### Decide the number of treatment groups
 
-The default is to only have a control group. It is likely that you will want more. Choosing `1` means you want to have one treatment and one control group.
 
-```
+```bash
+-------------------------------------------------
 How many treatment conditions, excluding control?
-        
-Please enter an integer (choosing 0 means only control group)
+-------------------------------------------------
+
+( 1 ) 1
+( 2 ) 2
+( 3 ) 3
+( 4 ) 4
+( 5 ) 5
+
+CHOICE: 
 ```
 
 ### Choose the type of labels  
   
 
 ```bash
-( 1 ) Apli-01277
-( 2 ) Avery-L7163
-( 3 ) Avery-3422
-( 4 ) Avery-5160
-( 5 ) Avery-5161
-( 6 ) Avery-5162
-( 7 ) Avery-5163
-( 8 ) Avery-5164
-( 9 ) Avery-8600
-
+--------------------------
 Which labels will you use?
+--------------------------
+
+( 1 ) Apli-01277
+( 2 ) Avery-3422
+( 3 ) Avery-5160
+( 4 ) Avery-5161
+( 5 ) Avery-5162
+( 6 ) Avery-5163
+( 7 ) Avery-5164
+( 8 ) Avery-8600
+( 9 ) Avery-L7163
+
+CHOICE: 
 ```
 
 ### Choose what you want on the labels  
 
 
 ```bash
-( 1 ) id
-( 2 ) name
-( 3 ) racecat
-( 4 ) classid
-( 5 ) assign
+---------------------------------------
+What do you want on the printed labels?
+---------------------------------------
 
-What do you want on the printed labels 
-(select desired columns by number, separated by commas)?
+( 1 ) classid
+( 2 ) id
+( 3 ) name
+( 4 ) gender
+( 5 ) racecat
+
+CHOICE: 
 ```
 
-The order matters. For example, `2,1,4`, would give:  
+Separate multiple options with a space keeping in mind that the order matters. For example, `3 2 1`, would gives labels that showed: 
 
 
 ```bash
-name
-id
-classid
+<name>
+<id>
+<classid>
 ```
 
 ## Output
