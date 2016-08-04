@@ -29,7 +29,7 @@ In terminal (works on OS X...not tested in other systems), navigate to the scrip
 
 or, if you want to set the Python interpreter manually:
 
-```bash
+```
 python<3> randomizelabel.py
 ```
 
@@ -37,7 +37,7 @@ Note that this script requires Python 3.x.
 
 ## Choose task
 
-```bash
+```
 -----------------------
 What do you want to do?
 -----------------------
@@ -55,7 +55,7 @@ If you've already randomized a roster and simply want to reprint the labels, cho
 
 You will be prompted for the location of the `*.csv` file. The script will first search the local directory for all `*.csv` files and list them:
 
-```bash
+```
 ------------------------------------------------------------
 Which CSV file contains the names of those to be randomized?
 ------------------------------------------------------------
@@ -67,19 +67,19 @@ CHOICE:
 ```
 If you place the names file in the same directory, you can just choose it from here. If you don't, you should select the number for `File not in this directory`. You will then be prompted with:
 
-```bash
+```
 Please give full path to CSV file:
 ```
 
 You should give the full path (no `~`); for example:
 
-```bash
+```
 /Users/<username>/randomizelabel/fakeclasslist.csv
 ```
 
 ### Choose primary unit of randomization
 
-```bash
+```
 ---------------------------------------------
 Which column contains the randomization unit?
 ---------------------------------------------
@@ -95,7 +95,7 @@ CHOICE:
 *NB: Randomization unit column cannot contain duplicate values.*
 
 ### Decide if you want to randomize within groups
-```bash
+```
 ----------------------------------
 Are you randomizing within groups?
 ----------------------------------
@@ -107,7 +107,7 @@ CHOICE:
 ```
 If you choose `yes` then:
 
-```bash
+```
 ---------------------------------
 Which column contains the groups?
 ---------------------------------
@@ -123,7 +123,7 @@ Which column contains the groups?
 ### Decide if you want to stratify the randomization  
 *NB: If you don't choose to randomize within groups, you won't be given the option to stratify. If you want to stratify across, for example, race/ethnicity or gender, but not within classrooms, then you should just chose to GROUP on that category. Though these terms have specific meanings, they are functionally the same as far as the randomization code is concerned.*
 
-```bash
+```
 -----------------------------------
 Should randomization be stratified?
 -----------------------------------
@@ -133,7 +133,7 @@ Should randomization be stratified?
 ```
 If you choose `yes` then:  
 
-```bash
+```
 -----------------------------------------------------
 Which column(s) contains the stratification category?
 -----------------------------------------------------
@@ -150,7 +150,7 @@ You may choose more than one category. Separate multiple choices with a space.
 
 To make that you get what you are expecting, the program will give you some descriptive information about your randomization choices. For example, if you chose to randomize on `id`, group on `classid`, and stratify across `gender` and `racecat`, you will see the following:
 
-```bash
+```
 ================================================================================
 
 For the randomization unit: id
@@ -228,7 +228,7 @@ Unique values:
 ### Decide the number of treatment groups
 
 
-```bash
+```
 -------------------------------------------------
 How many treatment conditions, excluding control?
 -------------------------------------------------
@@ -245,7 +245,7 @@ CHOICE:
 ### Choose the type of labels  
   
 
-```bash
+```
 --------------------------
 Which labels will you use?
 --------------------------
@@ -266,7 +266,7 @@ CHOICE:
 ### Choose what you want on the labels  
 
 
-```bash
+```
 ---------------------------------------
 What do you want on the printed labels?
 ---------------------------------------
@@ -283,7 +283,7 @@ CHOICE:
 Separate multiple options with a space keeping in mind that the order matters. For example, `3 2 1`, would gives labels that showed: 
 
 
-```bash
+```
 <name>
 <id>
 <classid>
@@ -333,7 +333,7 @@ The labels themselves **will not** indicate experimental group status (for obvio
 
 If you have already randomized your roster and want to reprint the labels, choose the second option from the first prompt. You will be asked:
 
-```bash
+```
 -----------------------------------
 Which CSV file contains the roster?
 -----------------------------------
@@ -346,7 +346,7 @@ CHOICE:
 ```
 which should be the original roster file, and,  
 
-```bash
+```
 ---------------------------------------
 Which CSV file contains the assignment?
 ---------------------------------------
