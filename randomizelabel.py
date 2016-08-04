@@ -208,102 +208,101 @@ def dataCheck(df, header, ru, group, strat):
 # USER PROMPTS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def whichCSV():
-
-     prompt = 'Which CSV file contains the names of those to be randomized?'
-     fopts = []
-     for f in os.listdir('./'):
-          if f.endswith('.csv'):
-               fopts.append(os.path.basename(f))
-     fopts.append('File not in this directory')
+def whichCSV(prompt):
+    
+    fopts = []
+    for f in os.listdir('./'):
+        if f.endswith('.csv'):
+            fopts.append(os.path.basename(f))
+    fopts.append('File not in this directory')
                
-     choice = pickOpt(prompt, fopts)
+    choice = pickOpt(prompt, fopts)
+    
+    while True:
+        if choice == len(fopts) - 1:
+            csvfile = input('Please give full path to CSV file: ')
+        else:
+            csvfile = os.path.abspath(fopts[choice])
+            
+        try:
+            df = pd.read_csv(csvfile)
 
-     while True:
-          if choice == len(fopts) - 1:
-               csvfile = input('Please give full path to CSV file: ')
-          else:
-               csvfile = os.path.abspath(fopts[choice])
-               
-          try:
-               df = pd.read_csv(csvfile)
-
-          except OSError:
-               errorMessage('Unable to read CSV. Please choose another file.')
-               continue
-          else:
-               return df
+        except OSError:
+            errorMessage('Unable to read CSV. Please choose another file.')
+            continue
+        else:
+            return df
        
 def whichColumn(df, header, prompt, multopts = False, unique = False):
      
-     while True:
-          choice = pickOpt(prompt, header, multopts)
-          if unique and len(df.iloc[:,choice]) > len(df.iloc[:,choice].unique()):
-               errorMessage('Values not unique. Please choose another column.')
-               continue
-          return choice
+    while True:
+        choice = pickOpt(prompt, header, multopts)
+        if unique and len(df.iloc[:,choice]) > len(df.iloc[:,choice].unique()):
+            errorMessage('Values not unique. Please choose another column.')
+            continue
+        return choice
 
 def randSettings(df, header):
 
-     # randomization unit
-     prompt = 'Which column contains the randomization unit?'
-     ru = whichColumn(df, header, prompt, unique = True)
+    # randomization unit
+    prompt = 'Which column contains the randomization unit?'
+    ru = whichColumn(df, header, prompt, unique = True)
      
-     # blocking
-     prompt = 'Are you randomizing within groups?'
-     choice = pickOpt(prompt, ['Yes', 'No'])
+    # blocking
+    prompt = 'Are you randomizing within groups?'
+    choice = pickOpt(prompt, ['Yes', 'No'])
      
-     if choice == 1:
-          group = None
-          strat = None
-          return ru, group, strat
+    if choice == 1:
+        group = None
+        strat = None
+        return ru, group, strat
 
-     while True:
-          prompt = 'Which column contains the groups?'
-          choice = whichColumn(df, header, prompt)
-          if badOpt(choice, header, rc = ru):
-               errorMessage('Column already chosen. Please choose again.')
-               matchMessage(header, rc = ru)
-               continue
-          group = choice
-          break
+    while True:
+        prompt = 'Which column contains the groups?'
+        choice = whichColumn(df, header, prompt)
+        if badOpt(choice, header, rc = ru):
+            errorMessage('Column already chosen. Please choose again.')
+            matchMessage(header, rc = ru)
+            continue
+        group = choice
+        break
 
-     # stratification
-     prompt = 'Should randomization be stratified?'
-     choice = pickOpt(prompt, ['Yes', 'No'])
+    # stratification
+    prompt = 'Should randomization be stratified?'
+    choice = pickOpt(prompt, ['Yes', 'No'])
 
-     if choice == 1:
-          strat = None
-          return ru, group, strat
+    if choice == 1:
+        strat = None
+        return ru, group, strat
 
-     while True:
-          prompt = 'Which column(s) contains the stratification category?'
-          choice = whichColumn(df, header, prompt, multopts = True)
-          if badOpt(choice, header, rc = ru, gc = group):
-               errorMessage('Column already chosen. Please choose again.')
-               matchMessage(header, rc = ru, gc = group)
-               continue
-          strat = choice
-          break
+    while True:
+        prompt = 'Which column(s) contains the stratification category?'
+        choice = whichColumn(df, header, prompt, multopts = True)
+        if badOpt(choice, header, rc = ru, gc = group):
+            errorMessage('Column already chosen. Please choose again.')
+            matchMessage(header, rc = ru, gc = group)
+            continue
+        strat = choice
+        break
      
-     return ru, group, strat
+    return ru, group, strat
     
 def numExperGroups():  
 
-     while True:
-          prompt = 'How many treatment conditions, excluding control?'
-          choice = pickOpt(prompt, [1,2,3,4,5])
-          break
+    while True:
+        prompt = 'How many treatment conditions, excluding control?'
+        choice = pickOpt(prompt, [1,2,3,4,5])
+        break
 
-     if choice == 0:
-          conditions = ['C','T']
-     else:
-          conditions = ['C'] + ['T' + str(i + 1) for i in range(choice)]
+    if choice == 0:
+        conditions = ['C','T']
+    else:
+        conditions = ['C'] + ['T' + str(i + 1) for i in range(choice)]
 
-     return conditions
+    return conditions
 
 def whichLabelType():
-
+    
     labopts = list(sorted(pdflabels.commercial_labels.keys()))
 
     while True:
@@ -315,9 +314,9 @@ def whichLabelType():
 
 def whichLabelOpts(df, header):
 
-     prompt = 'What do you want on the printed labels?'
-     labitems = whichColumn(df, header, prompt, multopts = True)
-     return labitems
+    prompt = 'What do you want on the printed labels?'
+    labitems = whichColumn(df, header, prompt, multopts = True)
+    return labitems
                
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # RANDOMIZATION FUNCTION
@@ -325,29 +324,29 @@ def whichLabelOpts(df, header):
 
 def randomizeUnits(df, header, cond, ru, group = None, strat = None):
 
-     # group_by categories, dropping None
-     gbc = [x for x in flatten([group, strat]) if x is not None]
+    # group_by categories, dropping None
+    gbc = [x for x in flatten([group, strat]) if x is not None]
+    
+    # simple random (no blocking)
+    if len(gbc) == 0:
+        a = cond * int(math.ceil(float(len(df.index)) / len(cond)))
+        df['assign'] = rd.sample(a, len(df.index))
+        return df
 
-     # simple random (no blocking)
-     if len(gbc) == 0:
-          a = cond * int(math.ceil(float(len(df.index)) / len(cond)))
-          df['assign'] = rd.sample(a, len(df.index))
-          return df
+    # within blocks/groups
+    gbc = [header[x] for x in gbc]
 
-     # within blocks/groups
-     gbc = [header[x] for x in gbc]
-
-     assignment = []
-     for index, value in df.groupby(gbc).size().iteritems():
-          a = cond * int(math.ceil(value / len(cond)))
-          a = rd.sample(a, value)
-          assignment.append(a)
-
-     assignment = flatten(assignment)
-
-     df['assign'] = assignment
-
-     return df
+    assignment = []
+    for index, value in df.groupby(gbc).size().iteritems():
+        a = cond * int(math.ceil(value / len(cond)))
+        a = rd.sample(a, value)
+        assignment.append(a)
+        
+    assignment = flatten(assignment)
+    
+    df['assign'] = assignment
+    
+    return df
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # OUT/PRINT FUNCTIONS
@@ -381,26 +380,43 @@ def makeLabels(df, labitems, labtype):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def main():
-     # get csv file
-     df = whichCSV()
-     header = list(df.columns.values)
-     # randomization settings
-     ru, group, strat = randSettings(df, header)
-     # data check
-     dataCheck(df, header, ru, group, strat)
-     # conditions
-     cond = numExperGroups()
-     # randomize
-     df = randomizeUnits(df, header, cond, ru, group, strat)
-     # output assignment table as csv
-     outTable(df, header, ru)
-     # label type
-     labtype = whichLabelType()
-     # label items
-     labitems = whichLabelOpts(df, header)
-     # make labels
-     makeLabels(df, labitems, labtype)
 
+    # randomize vs print labels from prior randomization
+    prompt = 'What do you want to do?'
+    opts = ['Randomize and make labels',
+            'Generate labels from prior randomization']
+    choice = pickOpt(prompt, opts)
+
+    # get roster file
+    df = whichCSV('Which CSV file contains the roster?')
+    header = list(df.columns.values)
+
+    if choice == 0:
+        # randomization settings
+        ru, group, strat = randSettings(df, header)
+        # data check
+        dataCheck(df, header, ru, group, strat)
+        # conditions
+        cond = numExperGroups()
+        # randomize
+        df = randomizeUnits(df, header, cond, ru, group, strat)
+        # output assignment table as csv
+        outTable(df, header, ru)
+    else:
+        # get assignment file
+        dfa = whichCSV('Which CSV file contains the assignment?')
+        ## merge
+        df = pd.merge(dfa, df, how = 'left')
+
+    # label type
+    labtype = whichLabelType()
+    # new header
+    header = list(df.columns.values)
+    # label items
+    labitems = whichLabelOpts(df, header)
+    # make labels
+    makeLabels(df, labitems, labtype)
+    
 # //////////////////////////////////////////////////////////////////////////////
 # RUN THE SCRIPT
 # //////////////////////////////////////////////////////////////////////////////

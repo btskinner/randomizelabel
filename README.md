@@ -35,6 +35,22 @@ python<3> randomizelabel.py
 
 Note that this script requires Python 3.x.
 
+## Choose task
+
+```bash
+-----------------------
+What do you want to do?
+-----------------------
+
+( 1 ) Randomize and make labels
+( 2 ) Generate labels from prior randomization
+
+CHOICE: 
+```
+If you've already randomized a roster and simply want to reprint the labels, choose the second option (see instructions below).
+
+## (1) Randomize and make labels
+
 ### Locate `*.csv` file
 
 You will be prompted for the location of the `*.csv` file. The script will first search the local directory for all `*.csv` files and list them:
@@ -312,6 +328,37 @@ assignemntlabels_C.csv
 ```
 
 The labels themselves **will not** indicate experimental group status (for obvious reasons) so this printing scheme will mitigate mix ups. The number of pages for each group will depend on the types of labels choosen.
+
+## (2) Generate labels from prior randomization
+
+If you have already randomized your roster and want to reprint the labels, choose the second option from the first prompt. You will be asked:
+
+```bash
+-----------------------------------
+Which CSV file contains the roster?
+-----------------------------------
+
+( 1 ) assignment.csv
+( 2 ) fakeclasslist.csv
+( 3 ) File not in this directory
+
+CHOICE: 
+```
+which should be the original roster file, and,  
+
+```bash
+---------------------------------------
+Which CSV file contains the assignment?
+---------------------------------------
+
+( 1 ) assignment.csv
+( 2 ) fakeclasslist.csv
+( 3 ) File not in this directory
+
+CHOICE: 
+```
+which should be the `assigment.csv` file generated the first time. These two files will be merged on the randomization column. After these steps, you will once again be asked to choose the types of labels and what you want printed on them.
+
 
 ## Acknowledgements
 * Originators and contributors to [PyFPDF](https://code.google.com/p/pyfpdf/)
