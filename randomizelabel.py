@@ -220,12 +220,12 @@ def whichCSV(prompt):
     
     while True:
         if choice == len(fopts) - 1:
-            csvfile = input('Please give full path to CSV file: ')
+            csvfile = input('Please give path to CSV file: ').strip()
         else:
             csvfile = os.path.abspath(fopts[choice])
             
         try:
-            df = pd.read_csv(csvfile)
+            df = pd.read_csv(os.path.expanduser(csvfile))
 
         except OSError:
             errorMessage('Unable to read CSV. Please choose another file.')
