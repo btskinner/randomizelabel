@@ -68,14 +68,17 @@ CHOICE:
 If you place the names file in the same directory, you can just choose it from here. If you don't, you should select the number for `File not in this directory`. You will then be prompted with:
 
 ```
-Please give full path to CSV file:
+Please give path to CSV file:
 ```
 
-You should give the full path (no `~`); for example:
+You can give the full or relative paths. For example, each of the below should work:
 
 ```
 /Users/<username>/randomizelabel/fakeclasslist.csv
+~/randomizelabel/fakeclasslist.csv
+./randomizelabel/fakeclasslist.csv
 ```
+
 
 ### Choose primary unit of randomization
 
