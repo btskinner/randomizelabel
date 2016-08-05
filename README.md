@@ -97,23 +97,23 @@ CHOICE:
 ```
 *NB: Randomization unit column cannot contain duplicate values.*
 
-### Decide if you want to randomize within groups
+### Decide if you want to block randomize
 ```
-----------------------------------
-Are you randomizing within groups?
-----------------------------------
+------------------------------------
+Should random assignment be blocked?
+------------------------------------
 
 ( 1 ) Yes
 ( 2 ) No
 
-CHOICE:
+CHOICE: 
 ```
 If you choose `yes` then:
 
 ```
----------------------------------
-Which column contains the groups?
----------------------------------
+----------------------------------------
+On which column(s) do you wish to block?
+----------------------------------------
 
 ( 1 ) classid
 ( 2 ) id
@@ -121,33 +121,10 @@ Which column contains the groups?
 ( 4 ) gender
 ( 5 ) racecat
 ```
-*NB: You cannot group on the primary randomization unit.*
+You may choose more than one category. Separate multiple choices with a space.  
 
-### Decide if you want to stratify the randomization  
-*NB: If you don't choose to randomize within groups, you won't be given the option to stratify. If you want to stratify across, for example, race/ethnicity or gender, but not within classrooms, then you should just chose to GROUP on that category. Though these terms have specific meanings, they are functionally the same as far as the randomization code is concerned.*
+*NB: You cannot block on the primary randomization unit.*
 
-```
------------------------------------
-Should randomization be stratified?
------------------------------------
-
-( 1 ) Yes
-( 2 ) No
-```
-If you choose `yes` then:  
-
-```
------------------------------------------------------
-Which column(s) contains the stratification category?
------------------------------------------------------
-
-( 1 ) classid
-( 2 ) id
-( 3 ) name
-( 4 ) gender
-( 5 ) racecat
-```
-You may choose more than one category. Separate multiple choices with a space.
 
 ### Check your options
 
@@ -361,6 +338,29 @@ Which CSV file contains the assignment?
 CHOICE: 
 ```
 which should be the `assigment.csv` file generated the first time. These two files will be merged on the randomization column. After these steps, you will once again be asked to choose the types of labels and what you want printed on them.
+
+### Adjustments to labels
+
+When reprinting labels, you will able to adjust the printing placement of the labels as well as the font size.
+
+```
+-----------------------------------------------------
+Do you want to adjust label margins and/or font size?
+-----------------------------------------------------
+
+( 1 ) Yes
+( 2 ) No
+```
+If you say yes, you will get the following options:
+
+```
+Please enter horizontal adjustment (negative number for left): 
+Please enter vertical adjustment (negative number for up):
+Please enter font size from 7 to 15 (default is 11):
+```
+Horizontal/vertical adjustments are additive. A positive number moves the labels to the right and down. Negative numbers are reverse the direction. Units are in millimeters.
+
+Font size must be one of the following options: `7, 8, 9, 10, 11, 12, 13, 14, 15`.
 
 
 ## Acknowledgements
