@@ -293,10 +293,30 @@ def whichLabelOpts(df, header):
     return labitems
                
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# RANDOMIZATION FUNCTION
+# RANDOMIZATION FUNCTIONS
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def randomizeUnits(df, header, cond, ru, block = None):
+def setSeed():
+    while True:
+        seed = input('Give integer seed of at least 6 digits: ').strip()
+        try:
+            int(seed)
+        except ValueError:
+            errorMessage('Seed not an integer (no letters or decimals)!')
+            continue
+        if len(seed) < 6:
+            errorMessage('Seed not long enough!')
+            continue  
+        break
+
+    with open('seed.txt', 'w') as f:
+        f.write(seed)
+    return int(seed)
+    
+def randomizeUnits(seed, df, header, cond, ru, block = None):
+
+    # set seed
+    rd.seed(seed)
 
     # group_by categories, dropping None
     gbc = [x for x in flatten([block]) if x is not None]
@@ -415,6 +435,8 @@ def main():
     header = list(df.columns.values)
 
     if choice == 0:
+        # set seed
+        seed = setSeed()
         # randomization settings
         ru, block = randSettings(df, header)
         # data check
@@ -422,7 +444,7 @@ def main():
         # conditions
         cond = numExperGroups()
         # randomize
-        df = randomizeUnits(df, header, cond, ru, block)
+        df = randomizeUnits(seed, df, header, cond, ru, block)
         # output assignment table as csv
         outTable(df, header, ru)
     else:
