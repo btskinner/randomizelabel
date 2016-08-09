@@ -79,6 +79,11 @@ You can give the full or relative paths. For example, each of the below should w
 ./randomizelabel/fakeclasslist.csv
 ```
 
+### Set seed
+```
+Give integer seed of at least 6 digits:
+```
+This seed is saved as `seed.txt` in the working directory. If you lose all assignment files, but have the roster and seed, you should be able to reproduce the same assignments.
 
 ### Choose primary unit of randomization
 
